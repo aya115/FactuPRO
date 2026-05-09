@@ -58,3 +58,21 @@ On the deployment server, ensure:
 4. Verify services:
    - Frontend: `http://<server>:3000`
    - Backend: `http://<server>:5000`
+
+## Dépannage
+
+### CD : `missing server host` ou erreur sur les secrets
+
+Le job **CD** a besoin des secrets du dépôt. Va dans **Settings → Secrets and variables → Actions** et crée au minimum :
+
+- `DEPLOY_HOST` : IP ou nom de domaine du serveur
+- `DEPLOY_USER` : utilisateur SSH (ex. `ubuntu`, `deploy`)
+- `DEPLOY_SSH_KEY` : contenu de la **clé privée** SSH (celle qui correspond à la clé publique sur le serveur)
+- `DEPLOY_PORT` : port SSH (souvent `22`) — optionnel, `22` est utilisé par défaut si vide
+- `DEPLOY_APP_DIR` : chemin absolu du clone Git sur le serveur (ex. `/home/ubuntu/FactuPRO`)
+
+Sans ces valeurs, le déploiement SSH ne peut pas démarrer.
+
+### CI : échec sur « Run frontend tests »
+
+Le test par défaut CRA cherchait le texte « learn react » qui n’existe plus. Le fichier `frontend/src/App.test.js` a été aligné sur la page d’accueil actuelle (router + AuthProvider).

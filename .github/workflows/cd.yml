@@ -15,13 +15,31 @@ jobs:
     name: Deploy with Docker Compose
     runs-on: ubuntu-latest
     steps:
+      - name: Vérifier les secrets de déploiement
+        shell: bash
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_APP_DIR: ${{ secrets.DEPLOY_APP_DIR }}
+        run: |
+          missing=0
+          if [ -z "$DEPLOY_HOST" ]; then echo "::error::Secret DEPLOY_HOST manquant (IP ou nom du serveur)."; missing=1; fi
+          if [ -z "$DEPLOY_USER" ]; then echo "::error::Secret DEPLOY_USER manquant."; missing=1; fi
+          if [ -z "$DEPLOY_SSH_KEY" ]; then echo "::error::Secret DEPLOY_SSH_KEY manquant (clé privée SSH)."; missing=1; fi
+          if [ -z "$DEPLOY_APP_DIR" ]; then echo "::error::Secret DEPLOY_APP_DIR manquant (chemin absolu du projet sur le serveur, ex: /opt/FactuPRO)."; missing=1; fi
+          if [ "$missing" -ne 0 ]; then
+            echo "Ajoute les secrets : GitHub → Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          port: ${{ secrets.DEPLOY_PORT }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
           script_stop: true
           script: |
             set -e
