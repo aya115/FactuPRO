@@ -1,0 +1,1054 @@
+.ia {
+  width: 100%;
+  max-width: 1200px;
+  padding: 24px 24px 60px;
+}
+
+.ia__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+  gap: 24px;
+}
+
+.ia__card {
+  background: radial-gradient(circle at top left, #0b1220, #020617);
+  border-radius: 24px;
+  padding: 24px 24px 20px;
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.7),
+    0 0 0 1px rgba(30, 64, 175, 0.6);
+  color: #e5e7eb;
+}
+
+.ia__title {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.ia__subtitle {
+  margin: 0 0 16px;
+  color: #9ca3af;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.ia__cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.ia__themeToggle {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  color: #e5e7eb;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.ia__themeToggle:hover {
+  background: rgba(30, 64, 175, 0.3);
+  transform: scale(1.05);
+}
+
+.ia__form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ia__inputWrap {
+  position: relative;
+}
+
+.ia__textareaRow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.ia__textareaRow .ia__textarea {
+  flex: 1;
+  min-width: 0;
+}
+
+.ia__voiceBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.ia__voiceBtn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #e5e7eb;
+}
+
+.ia__voiceBtn--mic.ia__voiceBtn--active,
+.ia__voiceBtn--speaker:active {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+.ia__voiceBtn--stop:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.ia__voiceIcon {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.ia__voiceIcon svg {
+  display: block;
+}
+
+.ia__voiceLabel {
+  white-space: nowrap;
+}
+
+.ia__voiceTranscript {
+  margin: 6px 0 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  font-size: 0.85rem;
+  color: #93c5fd;
+  font-style: italic;
+}
+
+.ia__readAloud {
+  margin-top: 12px;
+}
+
+.ia__readAloud .ia__voiceBtn--speaker {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+
+.ia__readAloud .ia__voiceBtn--speaker:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.ia__readAloud .ia__voiceBtn--stop {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.ia__suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 4px 0 0;
+  padding: 8px 0;
+  list-style: none;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.ia__suggestionBtn {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ia__suggestionBtn:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.ia__quickFilters,
+.ia__history {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ia__quickFiltersLabel,
+.ia__historyLabel {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.ia__chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.ia__chip:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.ia__chip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ia__chip--history {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ia__historyChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ia__textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #1e293b;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+}
+
+.ia__textarea:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.ia__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.ia__vizPick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ia__vizLabel {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+.ia__select {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  font-weight: 700;
+  background: #020617;
+  color: #e5e7eb;
+}
+
+.ia__btn {
+  background: linear-gradient(180deg, #1d4ed8 0%, #1e293b 100%);
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);
+}
+
+.ia__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.32);
+}
+
+.ia__btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ia__error {
+  margin-top: 10px;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #fecaca;
+  font-weight: 600;
+}
+
+.ia__answer {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px solid #1e293b;
+  color: #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.ia__sql {
+  margin-top: 12px;
+  font-size: 0.8rem;
+}
+
+.ia__sql summary {
+  cursor: pointer;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.ia__sql pre {
+  margin-top: 8px;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 10px 12px;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.ia__right {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ia__card--chart {
+  position: relative;
+  overflow: hidden;
+}
+
+.ia__card--chart::before {
+  content: "";
+  position: absolute;
+  inset: -120px -160px auto auto;
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.22), transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(16, 185, 129, 0.14), transparent 60%);
+  pointer-events: none;
+}
+
+.ia__chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ia__chartHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ia__chartFilterWrap {
+  position: relative;
+}
+
+.ia__chartFilterBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.ia__chartFilterBtn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #e5e7eb;
+}
+
+.ia__chartFilterBtn--active {
+  border-color: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
+.ia__chartFilterIcon {
+  display: inline-flex;
+  line-height: 1;
+}
+
+.ia__chartFilterIcon svg {
+  display: block;
+}
+
+.ia__chartFilterPanel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  min-width: 240px;
+  max-width: 340px;
+  max-height: 400px;
+  overflow: auto;
+  padding: 14px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+}
+
+.ia__chartFilterAxisChoice {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.ia__chartFilterAxisChoice .ia__chartFilterSectionTitle {
+  margin-bottom: 10px;
+}
+
+.ia__chartFilterAxisOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #e5e7eb;
+  margin-bottom: 6px;
+}
+
+.ia__chartFilterAxisOption input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+}
+
+.ia__chartFilterCheckboxes--disabled,
+.ia__chartFilterRange--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ia__chartFilterSection {
+  margin-bottom: 14px;
+}
+
+.ia__chartFilterSection:last-child {
+  margin-bottom: 0;
+}
+
+.ia__chartFilterSectionTitle {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.ia__chartFilterCheckAll {
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.ia__chartFilterLink {
+  background: none;
+  border: none;
+  color: #60a5fa;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+}
+
+.ia__chartFilterLink:hover {
+  text-decoration: underline;
+}
+
+.ia__chartFilterCheckboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.ia__chartFilterCheck {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+}
+
+.ia__chartFilterCheck input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+}
+
+.ia__chartFilterCheckLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ia__chartFilterRange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ia__chartFilterRange span {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.ia__chartFilterInput {
+  width: 80px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+}
+
+.ia__chartFilterInput::placeholder {
+  color: #64748b;
+}
+
+.ia__clarification {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.ia__clarificationText {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  color: #e5e7eb;
+  font-weight: 600;
+}
+
+.ia__clarificationChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ia__chip--clarify,
+.ia__chip--followUp {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.ia__chip--clarify:hover:not(:disabled),
+.ia__chip--followUp:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.35);
+}
+
+.ia__explanation {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  font-size: 0.9rem;
+  color: #d1fae5;
+}
+
+.ia__followUp {
+  margin-top: 14px;
+}
+
+.ia__followUpLabel {
+  display: block;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.ia__followUpChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ia__card--clarificationHelp {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.ia__mutedSmall {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.ia__chart {
+  margin-top: 10px;
+  border-radius: 18px;
+  border: 1px solid #1e293b;
+  background: radial-gradient(circle at top left, #020617, #020617);
+  padding: 10px 10px 6px;
+}
+
+.ia__chartEmpty {
+  padding: 18px 14px;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.ia__chartFilterEmpty {
+  padding: 24px 18px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ia__card--metrics {
+  min-height: 120px;
+}
+
+.ia__sectionTitle {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.ia__muted {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.ia__kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ia__kpi {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  color: #e5e7eb;
+  min-width: 140px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.22);
+}
+
+.ia__kpiLabel {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+}
+
+.ia__kpiValue {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.ia__card--table {
+  flex: 1;
+}
+
+.ia__tableToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.ia__btn--small {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
+.ia__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #1e293b;
+}
+
+.ia__pageBtn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.8);
+  color: #e5e7eb;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ia__pageBtn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+.ia__pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ia__pageInfo {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.ia__tableWrap {
+  overflow: auto;
+  border-radius: 16px;
+  border: 1px solid #1e293b;
+}
+
+.ia__table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  background: #020617;
+}
+
+.ia__table thead th {
+  position: sticky;
+  top: 0;
+  background: #020617;
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #1e293b;
+}
+
+.ia__table tbody td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #1e293b;
+  font-size: 0.9rem;
+}
+
+.ia__table tbody tr:hover td {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.ia__empty {
+  text-align: center;
+  padding: 18px 12px;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ——— Mode clair ——— */
+.ia.ia--light .ia__card {
+  background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__subtitle,
+.ia.ia--light .ia__mutedSmall,
+.ia.ia--light .ia__muted,
+.ia.ia--light .ia__vizLabel,
+.ia.ia--light .ia__historyLabel,
+.ia.ia--light .ia__quickFiltersLabel {
+  color: #475569;
+}
+
+.ia.ia--light .ia__textarea,
+.ia.ia--light .ia__select {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.ia.ia--light .ia__chip {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.ia.ia--light .ia__chip:hover:not(:disabled) {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.ia.ia--light .ia__suggestions {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.ia.ia--light .ia__suggestionBtn {
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__suggestionBtn:hover {
+  background: #eff6ff;
+}
+
+.ia.ia--light .ia__kpi {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__kpiLabel {
+  color: #64748b;
+}
+
+.ia.ia--light .ia__chart {
+  background: #fff;
+  border-color: #e2e8f0;
+}
+
+.ia.ia--light .ia__chartEmpty {
+  color: #64748b;
+}
+
+.ia.ia--light .ia__tableWrap {
+  border-color: #e2e8f0;
+}
+
+.ia.ia--light .ia__table,
+.ia.ia--light .ia__table thead th {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__table tbody tr:hover td {
+  background: #f8fafc;
+}
+
+.ia.ia--light .ia__empty {
+  color: #64748b;
+}
+
+.ia.ia--light .ia__answer,
+.ia.ia--light .ia__sql pre {
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+.ia.ia--light .ia__clarification {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.ia.ia--light .ia__clarificationText {
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__chip--clarify,
+.ia.ia--light .ia__chip--followUp {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.35);
+  color: #1d4ed8;
+}
+
+.ia.ia--light .ia__explanation {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.25);
+  color: #065f46;
+}
+
+.ia.ia--light .ia__followUpLabel {
+  color: #64748b;
+}
+
+.ia.ia--light .ia__card--clarificationHelp {
+  background: rgba(59, 130, 246, 0.06);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.ia.ia--light .ia__chartFilterBtn {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.ia.ia--light .ia__chartFilterBtn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.ia.ia--light .ia__chartFilterBtn--active {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.ia.ia--light .ia__chartFilterPanel {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.ia.ia--light .ia__chartFilterSectionTitle,
+.ia.ia--light .ia__chartFilterCheckAll {
+  color: #64748b;
+}
+
+.ia.ia--light .ia__chartFilterCheck {
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__chartFilterAxisChoice {
+  border-bottom-color: #e2e8f0;
+}
+
+.ia.ia--light .ia__chartFilterAxisOption {
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__chartFilterInput {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__voiceBtn {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.ia.ia--light .ia__voiceBtn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.ia.ia--light .ia__voiceBtn--mic.ia__voiceBtn--active {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #f87171;
+  color: #dc2626;
+}
+
+.ia.ia--light .ia__voiceTranscript {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.25);
+  color: #1d4ed8;
+}
+
+.ia.ia--light .ia__readAloud .ia__voiceBtn--speaker {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #34d399;
+  color: #059669;
+}
+
+.ia.ia--light .ia__readAloud .ia__voiceBtn--stop {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #f87171;
+  color: #dc2626;
+}
+
+.ia.ia--light .ia__sql pre {
+  background: #f1f5f9;
+}
+
+.ia.ia--light .ia__themeToggle {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__themeToggle:hover {
+  background: #eff6ff;
+}
+
+.ia.ia--light .ia__pageBtn {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.ia.ia--light .ia__pageBtn:hover:not(:disabled) {
+  background: #eff6ff;
+}
+
+.ia.ia--light .ia__pageInfo {
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .ia__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+

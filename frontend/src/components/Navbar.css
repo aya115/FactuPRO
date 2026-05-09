@@ -1,0 +1,176 @@
+/* Navbar — style application comptable professionnelle */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 32px;
+  height: 64px;
+  background: linear-gradient(120deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.86));
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.navbar--scrolled {
+  background: linear-gradient(120deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.94));
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.75);
+  border-bottom-color: rgba(148, 163, 184, 0.6);
+}
+
+.navbar__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.navbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #e5e7eb;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  transition: opacity 0.2s ease;
+}
+
+.navbar__brand:hover {
+  opacity: 0.92;
+  color: #f9fafb;
+}
+
+.navbar__logo-img {
+  display: block;
+  height: 74px;
+  width: auto;
+  max-width: min(240px, 48vw);
+  object-fit: contain;
+  object-position: left center;
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navbar__link {
+  text-decoration: none;
+  color: rgba(226, 232, 240, 0.88);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.navbar__link:hover {
+  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.16), transparent 65%);
+  color: #f9fafb;
+  border-color: rgba(56, 189, 248, 0.45);
+  transform: translateY(-1px);
+}
+
+.navbar__link--active {
+  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.2), rgba(37, 99, 235, 0.35));
+  color: #f9fafb;
+  border-color: rgba(56, 189, 248, 0.7);
+  box-shadow:
+    0 8px 26px rgba(56, 189, 248, 0.4),
+    0 0 0 1px rgba(15, 23, 42, 0.6);
+}
+
+.navbar__link--scroll {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.navbar__btn-login {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: radial-gradient(circle at top left, #38bdf8 0%, #0ea5e9 50%, #0369a1 100%);
+  color: #f9fafb;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  margin-left: 8px;
+}
+
+.navbar__btn-login:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(56, 189, 248, 0.55);
+}
+
+.navbar__btn-login--active {
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.9),
+    0 0 0 2px rgba(56, 189, 248, 0.8);
+}
+
+.navbar__user {
+  font-size: 0.85rem;
+  color: rgba(226, 232, 240, 0.9);
+  font-weight: 500;
+  padding: 8px 12px;
+  margin-left: 8px;
+  border-left: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+.navbar__user em {
+  font-style: normal;
+  color: rgba(148, 163, 184, 0.9);
+  font-weight: 400;
+}
+
+.navbar__logout {
+  background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  color: rgba(226, 232, 240, 0.96);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.navbar__logout:hover {
+  background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.08), rgba(15, 23, 42, 0.96));
+  border-color: rgba(248, 113, 113, 0.8);
+  box-shadow: 0 10px 26px rgba(248, 113, 113, 0.45);
+  transform: translateY(-1px);
+}
+
+.navbar__badge {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .navbar__link,
+  .navbar__link--scroll,
+  .navbar__user {
+    display: none;
+  }
+  .navbar__btn-login {
+    margin-left: 0;
+  }
+  .navbar__brand {
+    font-size: 1.1rem;
+  }
+}

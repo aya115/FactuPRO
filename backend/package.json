@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "pdfplumber": "^0.0.1-security",
+    "react-json-view": "^1.21.3"
+  }
+}

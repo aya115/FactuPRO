@@ -1,0 +1,49 @@
+{
+  "invoice_number": "TEST-ANOM-001",
+  "date_of_issue": "15/03/2024",
+  "seller_name": "Fournisseur Test SARL",
+  "client_name": "Client Demo SA",
+  "items": [
+    {
+      "description": "Clavier sans fil",
+      "quantity": 2,
+      "net_price": 25.00,
+      "net": 50.00,
+      "vat": 5.00,
+      "gross": 55.00,
+      "vat_rate": 0.10
+    },
+    {
+      "description": "Souris ergonomique",
+      "quantity": 3,
+      "net_price": 15.00,
+      "net": 60.00,
+      "vat": 6.00,
+      "gross": 66.00,
+      "vat_rate": 0.10
+    },
+    {
+      "description": "Casque audio",
+      "quantity": 1,
+      "net_price": 80.00,
+      "net": 75.00,
+      "vat": 8.00,
+      "gross": 88.00,
+      "vat_rate": 0.10
+    },
+    {
+      "description": "Webcam HD",
+      "quantity": 2,
+      "net_price": 45.00,
+      "net": 90.00,
+      "vat": 9.00,
+      "gross": 99.00,
+      "vat_rate": 0.15
+    }
+  ],
+  "totals": {
+    "net": 300.00,
+    "vat": 30.00,
+    "gross": 330.00
+  }
+}

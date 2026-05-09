@@ -1,0 +1,307 @@
+\documentclass[12pt,a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{listings}
+
+\geometry{margin=2.5cm}
+\onehalfspacing
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Rapport PFE - FactuPRO},
+    pdfauthor={Nom Prénom},
+}
+
+\lstdefinestyle{mystyle}{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{orange!70!black},
+    showstringspaces=false
+}
+\lstset{style=mystyle}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\Huge}
+  {\chaptername\ \thechapter}{20pt}{\Huge}
+
+\begin{document}
+
+% ---------------- PAGE DE GARDE ----------------
+\begin{titlepage}
+    \centering
+    {\Large Republique Tunisienne\par}
+    \vspace{0.3cm}
+    {\large Ministere de l'Enseignement Superieur et de la Recherche Scientifique\par}
+    \vspace{0.8cm}
+    {\large Institut / Ecole: \textbf{[Nom de l'etablissement]}\par}
+    \vspace{1.5cm}
+
+    {\Huge\bfseries Rapport de Projet de Fin d'Etudes\par}
+    \vspace{1cm}
+    {\Large\bfseries Conception et developpement d'une plateforme intelligente de traitement des factures: \textit{FactuPRO}\par}
+    \vspace{1.2cm}
+
+    \begin{flushleft}
+        \textbf{Realise par:} Nom Prenom \\
+        \textbf{Encadrant academique:} Nom Prenom \\
+        \textbf{Encadrant professionnel:} Nom Prenom \\
+        \textbf{Annee universitaire:} 2025 -- 2026
+    \end{flushleft}
+
+    \vfill
+    {\large \today\par}
+\end{titlepage}
+
+% ---------------- REMERCIEMENTS ----------------
+\chapter*{Remerciements}
+Je tiens a remercier toutes les personnes ayant contribue a la realisation de ce projet, en particulier mes encadrants pour leur suivi, leurs conseils techniques et leur soutien tout au long du stage.
+
+% ---------------- RESUME ----------------
+\chapter*{Resume}
+Ce projet presente la conception et le developpement de \textbf{FactuPRO}, une application web intelligente de traitement de factures. La solution automatise l'extraction OCR, la structuration des donnees, la classification comptable des lignes et la detection d'anomalies, tout en integrant un workflow de validation humaine avec gestion des roles (comptable, superviseur, administrateur). \\
+
+L'architecture repose sur un backend \textbf{Flask} et un frontend \textbf{React}, avec persistance des donnees sur \textbf{PostgreSQL}. Le systeme exploite des services d'IA (Groq, Gemini, OpenAI) pour enrichir l'analyse et l'assistance. Une demarche DevOps a ete integree avec \textbf{Docker Compose} et une chaine \textbf{CI/CD GitHub Actions} pour fiabiliser la qualite et le deploiement. \\
+
+Les resultats obtenus montrent la faisabilite d'un pipeline de traitement semi-automatique robuste, combinant performance, tracabilite et controle metier.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+% ---------------- INTRODUCTION GENERALE ----------------
+\chapter{Introduction generale}
+\section{Contexte}
+La digitalisation des processus financiers impose aux entreprises de traiter des volumes croissants de factures heterogenes (PDF, images, documents structures), avec des exigences fortes en precision, conformite et rapidite. Les approches manuelles sont couteuses et sources d'erreurs.
+
+\section{Problematique}
+Comment concevoir une plateforme capable de:
+\begin{itemize}
+    \item extraire automatiquement les donnees de factures multi-formats;
+    \item assister la classification comptable des lignes;
+    \item detecter les anomalies documentaires et metier;
+    \item maintenir une validation humaine securisee et tracable;
+    \item industrialiser le cycle de livraison via CI/CD.
+\end{itemize}
+
+\section{Objectifs}
+Les objectifs principaux du projet sont:
+\begin{enumerate}
+    \item developper un pipeline OCR+IA pour l'extraction structuree;
+    \item proposer une interface web adaptee aux differents roles;
+    \item assurer la persistance et l'auditabilite des corrections;
+    \item deployer une architecture conteneurisee et maintenable.
+\end{enumerate}
+
+\section{Demarche}
+Le travail a ete mene de maniere iterative: analyse des besoins, conception, implementation progressive backend/frontend, integration de l'IA, puis consolidation DevOps.
+
+% ---------------- ETUDE DE L'EXISTANT ET BESOINS ----------------
+\chapter{Etude de l'existant et analyse des besoins}
+\section{Fonctionnalites attendues}
+\subsection{Besoins fonctionnels}
+\begin{itemize}
+    \item Authentification et gestion des roles (JWT).
+    \item Import de factures (PDF/JPG/PNG/JSON/XML).
+    \item Extraction OCR et generation de donnees structurees.
+    \item Classification des lignes et proposition de comptes.
+    \item Detection d'anomalies (manques, incoherences, doublons potentiels).
+    \item Validation/correction manuelle et suivi superviseur.
+    \item Consultation des factures, details et metriques.
+\end{itemize}
+
+\subsection{Besoins non fonctionnels}
+\begin{itemize}
+    \item Securite des acces par role.
+    \item Fiabilite du pipeline avec gestion des erreurs.
+    \item Maintenabilite et modularite du code.
+    \item Deploiement reproductible via conteneurs.
+\end{itemize}
+
+\section{Choix technologiques}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{p{4cm}p{9cm}}
+        \toprule
+        \textbf{Composant} & \textbf{Technologies} \\
+        \midrule
+        Frontend & React, React Router, Axios \\
+        Backend API & Flask, Flask-CORS, PyJWT, bcrypt \\
+        Base de donnees & PostgreSQL (schemas factures, utilisateurs, corrections) \\
+        OCR / Vision & Tesseract, pdf2image, OpenCV \\
+        IA / NLP & Groq, Gemini, OpenAI (selon disponibilite des cles) \\
+        DevOps & Docker, Docker Compose, GitHub Actions (CI/CD) \\
+        \bottomrule
+    \end{tabular}
+    \caption{Pile technologique du projet FactuPRO}
+\end{table}
+
+% ---------------- CONCEPTION ----------------
+\chapter{Conception et architecture}
+\section{Architecture globale}
+Le systeme suit une architecture 3 couches:
+\begin{itemize}
+    \item \textbf{Presentation}: application React avec routes protegees.
+    \item \textbf{Metier/API}: backend Flask exposant les endpoints de traitement et de gestion.
+    \item \textbf{Donnees}: PostgreSQL pour stockage des factures, lignes, corrections, alertes.
+\end{itemize}
+
+\section{Architecture logique du backend}
+Le backend est structure autour de modules principaux:
+\begin{itemize}
+    \item \texttt{app.py}: routes REST, authentification, controle d'acces, integration metriques.
+    \item \texttt{utils.py}: pipeline OCR, parsing JSON, classification, anomalies, persistance.
+    \item modules auxiliaires: classification, detection d'anomalies, imputation comptable.
+\end{itemize}
+
+\section{Conception de la base de donnees}
+Principales tables:
+\begin{itemize}
+    \item \texttt{users}: comptes et roles.
+    \item \texttt{invoices}: entetes de factures extraites.
+    \item \texttt{invoices\_items}: lignes de factures.
+    \item \texttt{invoices\_corrected}, \texttt{invoice\_items\_corrected}: corrections humaines.
+    \item \texttt{ocr\_precision\_details}: comparaison extraction/correction.
+    \item \texttt{supervisor\_alerts}: notifications de relecture.
+\end{itemize}
+
+% ---------------- REALISATION ----------------
+\chapter{Realisation}
+\section{Workflow de traitement d'une facture}
+\begin{enumerate}
+    \item Upload du fichier via frontend.
+    \item Validation format et stockage temporaire backend.
+    \item Extraction OCR (PDF/image) et generation prompt IA.
+    \item Parsing du resultat pour obtenir un JSON structure.
+    \item Classification des items et enrichment comptable.
+    \item Detection d'anomalies et proposition utilisateur.
+    \item Validation manuelle et enregistrement final.
+\end{enumerate}
+
+\section{Principaux endpoints}
+\begin{longtable}{p{4cm}p{2.5cm}p{7.5cm}}
+    \toprule
+    \textbf{Endpoint} & \textbf{Methode} & \textbf{Description} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Endpoint} & \textbf{Methode} & \textbf{Description} \\
+    \midrule
+    \endhead
+    \texttt{/auth/signin} & POST & Authentification utilisateur \\
+    \texttt{/upload} & POST & Upload et traitement intelligent d'une facture \\
+    \texttt{/invoices/confirm} & POST & Validation/correction et calcul precision OCR \\
+    \texttt{/invoices} & GET & Liste des factures avec filtres \\
+    \texttt{/invoices/\{id\}/details} & GET & Details d'une facture \\
+    \texttt{/qa} & POST & Assistant IA (generation SQL) \\
+    \texttt{/metrics} & GET & Metriques globales du pipeline \\
+    \texttt{/supervisor/alerts} & GET & Alertes superviseur \\
+    \bottomrule
+\end{longtable}
+
+\section{Interface utilisateur}
+Le frontend propose:
+\begin{itemize}
+    \item pages d'authentification (\texttt{/signin}, \texttt{/signup});
+    \item tableau de bord par role (\texttt{/dashboard});
+    \item ecran de traitement et correction des factures;
+    \item assistant IA et visualisation de metriques.
+\end{itemize}
+
+% ---------------- DEVOPS ----------------
+\chapter{Integration DevOps}
+\section{Conteneurisation}
+Le projet utilise \texttt{docker-compose.yml} avec trois services:
+\begin{itemize}
+    \item \texttt{db}: PostgreSQL;
+    \item \texttt{backend}: API Flask;
+    \item \texttt{frontend}: application React servie via Nginx.
+\end{itemize}
+
+\section{Pipeline CI/CD}
+Deux workflows GitHub Actions ont ete integres:
+\begin{itemize}
+    \item \textbf{CI}: verification backend, tests frontend, build frontend.
+    \item \textbf{CD}: deploiement serveur via SSH et \texttt{docker compose up -d --build}.
+\end{itemize}
+
+\section{Apport}
+Cette integration permet:
+\begin{itemize}
+    \item une validation continue de la qualite;
+    \item une reduction des regressions;
+    \item un deploiement plus rapide et reproductible.
+\end{itemize}
+
+% ---------------- TESTS ET RESULTATS ----------------
+\chapter{Tests et resultats}
+\section{Strategie de test}
+\begin{itemize}
+    \item tests fonctionnels API (auth, upload, listing, validation);
+    \item tests d'integration frontend/backend;
+    \item verifications de robustesse du parsing et de gestion d'erreurs IA;
+    \item scenario de deploiement CI/CD.
+\end{itemize}
+
+\section{Resultats observes}
+\begin{itemize}
+    \item extraction OCR operationnelle sur documents multi-formats;
+    \item pipeline de correction humaine fonctionnel;
+    \item detection d'anomalies documentaires et alertes superviseur;
+    \item stabilisation des deploiements via Docker et GitHub Actions.
+\end{itemize}
+
+\section{Discussion}
+Le systeme atteint l'objectif d'automatiser une grande partie du flux de traitement, mais la qualite des donnees depend de la lisibilite documentaire et de la disponibilite des services IA externes.
+
+% ---------------- CONCLUSION ----------------
+\chapter{Conclusion generale et perspectives}
+\section{Conclusion}
+Le projet FactuPRO a permis de concevoir une solution complete, combinant OCR, intelligence artificielle et validation metier, dans une architecture web moderne et industrialisable.
+
+\section{Perspectives}
+Les evolutions envisagees sont:
+\begin{itemize}
+    \item amelioration de la precision OCR par entrainement specialise;
+    \item ajout d'un moteur de regles comptables avancees;
+    \item tableaux de bord analytiques enrichis (BI);
+    \item mise en place de tests automatiques plus etendus (API/UI/e2e);
+    \item deploiement multi-environnements (staging/production) avec approbation.
+\end{itemize}
+
+% ---------------- ANNEXES ----------------
+\appendix
+\chapter{Exemple de commande de deploiement}
+\begin{lstlisting}[language=bash]
+docker compose up -d --build
+\end{lstlisting}
+
+\chapter{Variables d'environnement principales}
+\begin{itemize}
+    \item \texttt{GROQ\_API\_KEY}
+    \item \texttt{GEMINI\_API\_KEY}
+    \item \texttt{OPENAI\_API\_KEY}
+    \item \texttt{PG\_HOST}, \texttt{PG\_PORT}, \texttt{PG\_DB}, \texttt{PG\_USER}, \texttt{PG\_PASSWORD}
+\end{itemize}
+
+\end{document}

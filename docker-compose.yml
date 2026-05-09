@@ -1,0 +1,56 @@
+# Base Postgres dédiée au Docker : base "invoice_docker", port machine 5433.
+# Le backend reçoit PG_* ci-dessous : ces valeurs ÉCRASENT celles du fichier .env
+# (ton .env reste pour python app.py → localhost / ta base locale).
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: invoice_docker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_docker:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d invoice_docker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      PG_HOST: db
+      PG_PORT: "5432"
+      PG_DB: invoice_docker
+      PG_USER: postgres
+      PG_PASSWORD: postgres
+      FLASK_DEBUG: "0"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_BASE: http://localhost:5000
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata_docker:
+  backend_uploads:
