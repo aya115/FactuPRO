@@ -76,3 +76,7 @@ Sans ces valeurs, le déploiement SSH ne peut pas démarrer.
 ### CI : échec sur « Run frontend tests »
 
 Le test par défaut CRA cherchait le texte « learn react » qui n’existe plus. Le fichier `frontend/src/App.test.js` a été aligné sur la page d’accueil actuelle (router + AuthProvider).
+
+### CI : `Cannot find module 'react-router-dom'`
+
+Avec **react-router-dom v7**, le champ `exports` du paquet n’est pas toujours résolu par **Jest 27** (CRA 5). Des entrées `jest.moduleNameMapper` ont été ajoutées dans `frontend/package.json` pour pointer vers les fichiers CommonJS réels (`dist/index.js`, etc.).
