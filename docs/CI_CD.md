@@ -87,4 +87,4 @@ Avec **react-router-dom v7**, le champ `exports` du paquet n’est pas toujours 
 
 ### CI : `Unexpected token 'export'` dans `react-markdown`
 
-**react-markdown** est publié en **ESM** ; Jest (CRA) ne transpile pas `node_modules` par défaut. Un **mock manuel** est fourni dans `frontend/__mocks__/react-markdown.js`, activé par `jest.mock('react-markdown')` dans `setupTests.js`.
+**react-markdown** est publié en **ESM** ; Jest (CRA) ne transpile pas `node_modules` par défaut. Un stub **CommonJS** est dans `frontend/__mocks__/react-markdown.js` et est forcé via **`jest.moduleNameMapper`** (`^react-markdown$` → ce fichier), car `jest.mock` dans `setupTests.js` peut s’exécuter trop tard pour les imports transitifs.

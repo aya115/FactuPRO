@@ -4,7 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-jest.mock('react-markdown');
+// react-markdown (ESM) est redirigé vers __mocks__/react-markdown.js via jest.moduleNameMapper dans package.json
 
 // react-router v7 s'appuie sur TextEncoder / TextDecoder ; Jest + jsdom ne les exposent pas toujours globalement.
 import { TextDecoder, TextEncoder } from 'util';
