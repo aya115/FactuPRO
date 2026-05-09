@@ -7,11 +7,12 @@ This project uses two GitHub Actions workflows:
 
 ## CI workflow
 
-Runs on `pull_request` and on pushes to `main`/`develop`.
+Runs on `pull_request`, on `workflow_dispatch` (manuel), and on pushes to `main` / `develop` / `factupro`.
 
 Checks included:
 
 - Backend dependency install (`backend/requirements.txt`)
+
 - Backend syntax compilation (`python -m compileall`)
 - Frontend dependency install (`npm ci`)
 - Frontend tests (`npm test -- --watchAll=false --passWithNoTests`)
