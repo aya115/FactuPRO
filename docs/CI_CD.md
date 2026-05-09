@@ -84,3 +84,7 @@ Avec **react-router-dom v7**, le champ `exports` du paquet n’est pas toujours 
 ### CI : `ReferenceError: TextEncoder is not defined`
 
 **react-router v7** utilise `TextEncoder` au chargement. Sous **Jest + jsdom**, ce global peut être absent. Un polyfill a été ajouté dans `frontend/src/setupTests.js` via le module Node `util`.
+
+### CI : `Unexpected token 'export'` dans `react-markdown`
+
+**react-markdown** est publié en **ESM** ; Jest (CRA) ne transpile pas `node_modules` par défaut. Un **mock manuel** est fourni dans `frontend/__mocks__/react-markdown.js`, activé par `jest.mock('react-markdown')` dans `setupTests.js`.
