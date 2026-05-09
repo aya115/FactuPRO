@@ -80,3 +80,7 @@ Le test par défaut CRA cherchait le texte « learn react » qui n’existe plus
 ### CI : `Cannot find module 'react-router-dom'`
 
 Avec **react-router-dom v7**, le champ `exports` du paquet n’est pas toujours résolu par **Jest 27** (CRA 5). Des entrées `jest.moduleNameMapper` ont été ajoutées dans `frontend/package.json` pour pointer vers les fichiers CommonJS réels (`dist/index.js`, etc.).
+
+### CI : `ReferenceError: TextEncoder is not defined`
+
+**react-router v7** utilise `TextEncoder` au chargement. Sous **Jest + jsdom**, ce global peut être absent. Un polyfill a été ajouté dans `frontend/src/setupTests.js` via le module Node `util`.
