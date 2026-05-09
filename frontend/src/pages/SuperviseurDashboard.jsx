@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
-import InvoicesCards from "../components/InvoicesCards"; // Changement ici
-import MetricsPage from "../components/MetricsPage";
 import "./Dashboards.css";
 
 export default function SuperviseurDashboard() {
@@ -29,11 +27,11 @@ export default function SuperviseurDashboard() {
   const greeting = new Date().getHours() < 12 ? "Bonjour" : "Bonsoir";
 
   const nbInvoices = metrics?.nb_invoices ?? metrics?.nb_invoices_processed ?? 0;
-  const ocrPrecision =
+  const ocrPrecisionLabel =
     metrics?.ocr_precision != null || metrics?.ocr_precision_pct != null
-      ? Number(
+      ? `${Number(
           metrics.ocr_precision ?? metrics.ocr_precision_pct
-        ).toFixed(1)
+        ).toFixed(1)}%`
       : "—";
 
   const markAsRead = async (alertId) => {
@@ -64,7 +62,13 @@ export default function SuperviseurDashboard() {
                 Factures présentes dans le système
               </div>
             </div>
-            
+            <div className="dashboard-stat">
+              <div className="dashboard-stat__icon">🎯</div>
+              <div className="dashboard-stat__value">{ocrPrecisionLabel}</div>
+              <div className="dashboard-stat__label">
+                Précision OCR (métriques pipeline)
+              </div>
+            </div>
           </div>
         )}
       </header>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "../api";
 import { useAuth } from "../contexts/AuthContext";
 import "./UsersAdmin.css";
@@ -19,7 +19,7 @@ export default function UsersAdmin() {
   });
 
   // ================= LOAD USERS =================
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       const res = await api.get("/admin/users", {
         headers: getAuthHeader()
@@ -30,11 +30,11 @@ export default function UsersAdmin() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getAuthHeader]);
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
 
   // ================= CREATE OR UPDATE =================
   const handleSubmit = async () => {

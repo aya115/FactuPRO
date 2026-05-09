@@ -357,8 +357,8 @@ export default function InvoiceAssistantDashboard() {
     return SUGGESTED_QUESTIONS.filter((s) => s.toLowerCase().includes(q)).slice(0, 8);
   }, [question]);
 
-  const columns = result?.columns || [];
-  const rows = result?.rows || [];
+  const columns = useMemo(() => result?.columns ?? [], [result?.columns]);
+  const rows = useMemo(() => result?.rows ?? [], [result?.rows]);
   const kpis = result?.kpis || [];
   const viz = result?.viz || {};
 

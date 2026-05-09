@@ -204,6 +204,10 @@ export default function AdminDashboard() {
                   {analytics.totals.clients}
                 </span>
               </div>
+              <div className="admin-kpi">
+                <span className="admin-kpi__label">Précision OCR</span>
+                <span className="admin-kpi__value">{precisionDisplay}</span>
+              </div>
             </div>
           </div>
 

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
 import UploadInvoice from "../components/UploadInvoice";
-import InvoicesCards from "../components/InvoicesCards"; // Changement ici
 import "./Dashboards.css";
 
 export default function ComptableDashboard() {

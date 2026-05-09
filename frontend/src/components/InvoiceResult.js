@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import api from "../api";
 import "./InvoiceResult.css";
@@ -35,7 +35,10 @@ export default function InvoiceResult({ data }) {
     anomalies: invoice?.anomalies,
   };
 
-  const jsonData = invoice?.json ?? invoice?.json_output ?? {};
+  const jsonData = useMemo(
+    () => invoice?.json ?? invoice?.json_output ?? {},
+    [invoice?.json, invoice?.json_output]
+  );
   const anomalies = invoice?.anomalies ?? [];
   const classificationItems = invoice?.classification?.items ?? [];
   const faiblessesRecommandations = extractFaiblessesRecommandations(

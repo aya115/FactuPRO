@@ -3,7 +3,6 @@ import api from "../api";
 import "./MetricsPage.css";
 
 export default function MetricsPage() {
-  const [data, setData] = useState({});
   const [ocrDetails, setOcrDetails] = useState([]);
   const [invoiceId, setInvoiceId] = useState("");
   const [invoiceQuery, setInvoiceQuery] = useState("");
@@ -20,7 +19,6 @@ export default function MetricsPage() {
       .get("/metrics")
       .then((res) => {
         console.log("METRICS RESPONSE:", res.data);
-        setData(res.data || {});
       })
       .catch((err) =>
         setError(err.response?.data?.error || err.message)
@@ -101,16 +99,6 @@ export default function MetricsPage() {
   const pct = (v) =>
     v != null && typeof v === "number"
       ? `${v.toFixed(2)} %`
-      : "—";
-
-  const pctFromRatio = (v) =>
-    v != null && typeof v === "number"
-      ? `${(v * 100).toFixed(2)} %`
-      : "—";
-
-  const seconds = (v) =>
-    v != null && typeof v === "number"
-      ? `${v.toFixed(2)} s`
       : "—";
 
   const ocrPrecision = useMemo(() => {
