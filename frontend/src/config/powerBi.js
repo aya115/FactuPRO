@@ -54,7 +54,9 @@ export function getPowerBiViewUrl(pageSegment, reportIdOverride) {
   if (!pageSegment) {
     return (
       process.env.REACT_APP_POWERBI_VIEW_URL ||
-      `https://app.powerbi.com/groups/me/reports/${id}?experience=power-bi`
+      (id === DEFAULT_REPORT_ID
+        ? DEFAULT_VIEW_URL
+        : `https://app.powerbi.com/groups/me/reports/${id}?experience=power-bi`)
     );
   }
   return `https://app.powerbi.com/groups/me/reports/${id}/${pageSegment}?experience=power-bi`;

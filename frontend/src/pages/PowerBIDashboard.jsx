@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import api from "../api";
 import { useAuth } from "../contexts/AuthContext";
 import { buildPowerBiEmbedUrl, getPowerBiViewUrl } from "../config/powerBi";
@@ -33,7 +32,6 @@ function PowerBiFrame({ title, embedUrl, supervisorView = false }) {
 function AdminPowerBIReport() {
   const { getAuthHeader } = useAuth();
   const [embedUrl, setEmbedUrl] = useState("");
-  const viewUrl = useMemo(() => getPowerBiViewUrl(), []);
 
   useEffect(() => {
     api

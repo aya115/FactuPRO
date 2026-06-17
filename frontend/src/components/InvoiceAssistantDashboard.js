@@ -508,7 +508,7 @@ export default function InvoiceAssistantDashboard() {
 
   const chartQuestion = result?.question || question;
 
-  const { labelColumn, valueColumn, chartData, chartType, labelSpec } = useMemo(() => {
+  const { labelColumn, valueColumn, chartData, chartType } = useMemo(() => {
     const cols = columns;
     const rs = rows;
     const explicitType = typeof viz.type === "string" ? viz.type.toLowerCase() : "";
@@ -561,9 +561,8 @@ export default function InvoiceAssistantDashboard() {
       valueColumn: valueCol,
       chartData: data,
       chartType: type,
-      labelSpec: labelSpecInner,
     };
-  }, [columns, rows, viz.type, viz.labelColumn, viz.valueColumn, vizOverride, chartQuestion]);
+  }, [columns, rows, viz.type, viz.labelColumn, viz.valueColumn, vizOverride, chartQuestion, question]);
 
   const filteredChartData = useMemo(() => {
     let data = chartData;
