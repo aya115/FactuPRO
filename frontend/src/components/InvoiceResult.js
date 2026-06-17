@@ -47,7 +47,20 @@ export default function InvoiceResult({ data }) {
 
   // Initialiser / synchroniser le brouillon avec les données extraites
   useEffect(() => {
-    setDraftJson(jsonData || {});
+    const j = jsonData || {};
+    const sn = j.seller_name;
+    const cn = j.client_name;
+    setDraftJson({
+      ...j,
+      seller_name:
+        typeof sn === "object" && sn !== null && !Array.isArray(sn)
+          ? { name: "", address: "", tax_id: "", ...sn }
+          : { name: typeof sn === "string" ? sn : "", address: "", tax_id: "" },
+      client_name:
+        typeof cn === "object" && cn !== null && !Array.isArray(cn)
+          ? { name: "", address: "", tax_id: "", ...cn }
+          : { name: typeof cn === "string" ? cn : "", address: "", tax_id: "" },
+    });
     setValidationMsg("");
     setValidationError("");
   }, [invoice, jsonData]);
@@ -152,35 +165,37 @@ export default function InvoiceResult({ data }) {
       />
       ) : (
         <div className="markdown-content">
-          {/* Seller & Client (éditables) */}
-          {(draftJson?.seller_name?.name ||
-            draftJson?.client_name?.name) && (
-            <div className="invoice-result-seller-client">
-              <h4 className="invoice-items-table-title">
-                Détails du Seller et du Client (modifiable)
-              </h4>
+          {/* Seller & Client : toujours visibles pour compléter ce que l'OCR a raté */}
+          <div className="invoice-result-seller-client">
+            <h4 className="invoice-items-table-title">
+              Détails du Seller et du Client (modifiable)
+            </h4>
+            <p className="invoice-ocr-hint">
+              L’OCR et l’IA peuvent omettre des champs : complétez ici avant validation si besoin.
+            </p>
 
-              <p>
-                <strong>Vendeur :</strong>{" "}
-                <input
-                  type="text"
-                  value={draftJson?.seller_name?.name || ""}
-                  onChange={handleSellerChange}
-                  className="invoice-inline-input"
-                />
-              </p>
+            <p>
+              <strong>Vendeur :</strong>{" "}
+              <input
+                type="text"
+                value={draftJson?.seller_name?.name || ""}
+                onChange={handleSellerChange}
+                className="invoice-inline-input"
+                placeholder="Nom issu de la facture ou saisie manuelle"
+              />
+            </p>
 
-              <p>
-                <strong>Acheteur :</strong>{" "}
-                <input
-                  type="text"
-                  value={draftJson?.client_name?.name || ""}
-                  onChange={handleClientChange}
-                  className="invoice-inline-input"
-                />
-              </p>
-            </div>
-          )}
+            <p>
+              <strong>Acheteur :</strong>{" "}
+              <input
+                type="text"
+                value={draftJson?.client_name?.name || ""}
+                onChange={handleClientChange}
+                className="invoice-inline-input"
+                placeholder="Client / Bill to — souvent absent si mal lu par l’OCR"
+              />
+            </p>
+          </div>
 
           {/* Items Table (éditable) */}
           {(draftJson.items || []).length > 0 && (

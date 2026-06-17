@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import InvoicesCards from "./components/InvoicesCards";
 import InvoiceAssistantDashboard from "./components/InvoiceAssistantDashboard";
@@ -14,11 +14,16 @@ import UsersAdmin from "./pages/UsersAdmin";
 import LandingPage from "./pages/LandingPage";
 import InvoiceDetail from "./components/InvoiceDetail";
 import InvoiceCorrectionReview from "./pages/InvoiceCorrectionReview";
+import PowerBIDashboard from "./pages/PowerBIDashboard";
+import Messenger from "./pages/Messenger";
 function App() {
+  const { pathname } = useLocation();
+  const isHome = pathname === "/";
+
   return (
     <div className="App">
       <Navbar />
-      <main className="App__main">
+      <main className={`App__main${isHome ? " App__main--home" : ""}`}>
         <Routes>
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
@@ -62,6 +67,26 @@ function App() {
                 <UsersAdmin />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute roles={["comptable", "superviseur"]}>
+                <Messenger />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics/bi"
+            element={
+              <ProtectedRoute roles={["admin", "superviseur"]}>
+                <PowerBIDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/powerbi-setup"
+            element={<Navigate to="/dashboard" replace />}
           />
           <Route
             path="/invoice/:id"

@@ -34,6 +34,9 @@ services:
       PG_USER: postgres
       PG_PASSWORD: postgres
       FLASK_DEBUG: "0"
+      # 200 au lieu de 300 : rendu PDF beaucoup plus rapide (timeout navigateur)
+      PDF_RENDER_DPI: "200"
+      TOKENIZERS_PARALLELISM: "false"
     depends_on:
       db:
         condition: service_healthy
@@ -51,6 +54,40 @@ services:
     depends_on:
       - backend
 
+  prometheus:
+    build:
+      context: ./monitoring/prometheus
+      dockerfile: Dockerfile
+    image: invoice_app-prometheus:local
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_tsdb:/prometheus
+    depends_on:
+      - backend
+
+  grafana:
+    build:
+      context: ./monitoring/grafana
+      dockerfile: Dockerfile
+    image: invoice_app-grafana:local
+    ports:
+      - "3030:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - db
+
 volumes:
   pgdata_docker:
   backend_uploads:
+  grafana_data:
+  prometheus_tsdb:

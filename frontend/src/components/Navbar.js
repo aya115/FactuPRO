@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import api from "../api";
 import "./Navbar.css";
 
 const ROLE_LABELS = {
@@ -14,8 +15,27 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   const role = user?.role;
+
+  useEffect(() => {
+    if (!isAuthenticated || (role !== "comptable" && role !== "superviseur")) {
+      setUnreadMessages(0);
+      return undefined;
+    }
+
+    const fetchUnread = () => {
+      api
+        .get("/chat/unread-count")
+        .then((res) => setUnreadMessages(res.data?.unread_count || 0))
+        .catch(() => {});
+    };
+
+    fetchUnread();
+    const id = setInterval(fetchUnread, 15000);
+    return () => clearInterval(id);
+  }, [isAuthenticated, role]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -37,18 +57,18 @@ export default function Navbar() {
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const onHero = location.pathname === "/" && !scrolled;
+
   return (
-    <header className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
+    <header
+      className={`navbar ${scrolled ? "navbar--scrolled" : ""}${onHero ? " navbar--on-hero" : ""}`}
+    >
       <div className="navbar__inner">
 
         <Link to="/" className="navbar__brand" aria-label="FactuPRO — accueil">
-          <img
-            src={`${process.env.PUBLIC_URL}/factupro-logo.png`}
-            alt="FactuPRO"
-            className="navbar__logo-img"
-            width={220}
-            height={49}
-          />
+          <span className="navbar__wordmark" aria-label="FactuPRO">
+            Factu<span>PRO</span>
+          </span>
         </Link>
 
         <nav className="navbar__links">
@@ -81,6 +101,18 @@ export default function Navbar() {
                 </>
               )}
 
+              {(role === "comptable" || role === "superviseur") && (
+                <Link
+                  className={`navbar__link ${location.pathname === "/messages" ? "navbar__link--active" : ""}`}
+                  to="/messages"
+                >
+                  Messages
+                  {unreadMessages > 0 && (
+                    <span className="navbar__msg-badge">{unreadMessages > 99 ? "99+" : unreadMessages}</span>
+                  )}
+                </Link>
+              )}
+
               {(role === "superviseur" || role === "admin") && (
                 <>
                   <Link
@@ -88,6 +120,12 @@ export default function Navbar() {
                     to="/metrics"
                   >
                     Métriques
+                  </Link>
+                  <Link
+                    className={`navbar__link ${location.pathname === "/analytics/bi" ? "navbar__link--active" : ""}`}
+                    to="/analytics/bi"
+                  >
+                    Rapport BI
                   </Link>
                 </>
               )}

@@ -1,15 +1,15 @@
 .auth-page {
-  min-height: calc(100vh - 96px);
+  min-height: calc(100vh - var(--fp-nav-height));
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 96px 24px 48px;
+  padding: calc(var(--fp-nav-height) + 24px) 24px 48px;
 }
 
 .auth-card {
   width: 100%;
   max-width: 420px;
-  background: #ffffff;
+  background: var(--fp-surface-raised);
   border-radius: 16px;
   padding: 32px 28px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12), 0 8px 24px rgba(15, 23, 42, 0.06);

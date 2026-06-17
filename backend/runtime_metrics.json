@@ -1,11 +1,14 @@
 {
-  "nb_invoices_processed": 14,
-  "nb_invoices_with_items": 4,
-  "total_processing_time": 273.3624622821808,
-  "nb_confirmed_invoices": 0,
-  "ocr_scores": [],
-  "nb_anomalies": 20,
-  "nb_total_lines": 9,
-  "last_pipeline_hash": "",
-  "last_logged_accuracy": null
+  "nb_invoices_processed": 17,
+  "nb_invoices_with_items": 7,
+  "total_processing_time": 429.0329794883728,
+  "nb_confirmed_invoices": 2,
+  "ocr_scores": [
+    100.0,
+    100.0
+  ],
+  "nb_anomalies": 26,
+  "nb_total_lines": 25,
+  "last_pipeline_hash": "8d90658a5bac043eea223a66c8d6ccc4197e65189603a6f75d75cd5f5833085a",
+  "last_logged_accuracy": 100.0
 }

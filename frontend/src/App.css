@@ -1,87 +1,73 @@
-:root {
-  --bg-page: #0f172a;
-  --bg-page-soft: radial-gradient(circle at top left, #1e293b 0, #020617 55%);
-  --bg-surface: #0b1120;
-  --bg-card: #020617;
-  --border-subtle: rgba(148, 163, 184, 0.5);
-  --text-main: #e5e7eb;
-  --text-muted: #9ca3af;
-  --accent: #38bdf8;
-  --accent-soft: rgba(56, 189, 248, 0.18);
-  --accent-strong: #22c55e;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg-page-soft);
-  color: var(--text-main);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 .App {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
-    radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.16), transparent 55%);
+  background: var(--fp-bg-subtle);
 }
 
 .App__main {
   width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 96px 24px 56px;
+  align-items: stretch;
+  padding: calc(var(--fp-nav-height) + 24px) 24px 48px;
   flex: 1;
 }
 
+.App__main--home {
+  max-width: none;
+  padding: 0;
+}
+
 .upload-container {
-  max-width: 680px;
+  max-width: 640px;
   width: 100%;
   margin: 0 auto;
-  background: rgba(15, 23, 42, 0.98);
-  padding: 44px 48px;
-  border-radius: 24px;
-  box-shadow:
-    0 18px 45px rgba(15, 23, 42, 0.9),
-    0 0 0 1px rgba(148, 163, 184, 0.35);
+  background: var(--fp-surface-inset);
+  padding: 40px 44px;
+  border-radius: var(--fp-radius-2xl);
+  box-shadow: var(--fp-shadow-lg), var(--fp-shadow-inset);
+  border: 1px solid var(--fp-border-strong);
   text-align: center;
-  animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  color: var(--text-main);
+  animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  color: var(--fp-text);
 }
 
 @keyframes cardIn {
   from {
     opacity: 0;
-    transform: translateY(24px) scale(0.98);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
 .upload-container h2 {
-  margin-bottom: 32px;
-  color: #f9fafb;
-  font-size: 1.45rem;
+  margin-bottom: 28px;
+  color: var(--fp-text);
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   padding-bottom: 16px;
-  border-bottom: 2px solid #f1f5f9;
+  border-bottom: 1px solid var(--fp-border);
+}
+
+.upload-hint {
+  margin: 16px auto 0;
+  max-width: 36rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--fp-text-muted);
+  text-align: center;
 }
 
 .file-input-wrapper {
   position: relative;
-  margin: 28px 0;
+  margin: 24px 0;
 }
 
 .file-input-wrapper input[type="file"] {
@@ -97,55 +83,43 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 32px;
-  border: 1px dashed rgba(148, 163, 184, 0.7);
-  border-radius: 20px;
-  background: radial-gradient(circle at top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.98) 65%);
+  padding: 36px 28px;
+  border: 2px dashed var(--fp-border-strong);
+  border-radius: var(--fp-radius-xl);
+  background: var(--fp-surface-input);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  min-height: 180px;
+  transition: border-color var(--fp-transition), background var(--fp-transition), box-shadow var(--fp-transition);
+  min-height: 168px;
 }
 
 .file-input-label:hover {
-  border-color: var(--accent);
-  background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98) 0%, rgba(15, 23, 42, 1) 65%);
-  box-shadow: 0 14px 40px rgba(56, 189, 248, 0.28);
-  transform: translateY(-2px);
+  border-color: var(--fp-primary);
+  background: var(--fp-primary-soft);
+  box-shadow: var(--fp-shadow-sm);
 }
 
 .file-input-label.has-file {
-  border-color: var(--accent-strong);
-  background: radial-gradient(circle at top, rgba(6, 95, 70, 0.95) 0%, rgba(5, 46, 22, 1) 65%);
-  box-shadow: 0 16px 50px rgba(34, 197, 94, 0.45);
+  border-color: var(--fp-success);
+  border-style: solid;
+  background: var(--fp-success-soft);
 }
 
 .file-icon {
-  font-size: 3rem;
-  margin-bottom: 14px;
-  filter: grayscale(0.2);
-  transition: transform 0.3s ease;
-}
-
-.file-input-label:hover .file-icon {
-  transform: scale(1.08);
-}
-
-.file-input-label.has-file .file-icon {
-  filter: none;
+  font-size: 2.75rem;
+  margin-bottom: 12px;
 }
 
 .file-text {
-  font-size: 1.05rem;
-  color: var(--text-main);
+  font-size: 1rem;
+  color: var(--fp-text);
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .file-name {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin-top: 8px;
-  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--fp-text-muted);
+  margin-top: 6px;
   word-break: break-all;
   max-width: 100%;
   padding: 0 12px;
@@ -153,58 +127,47 @@ body {
 
 .button-group {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   justify-content: center;
-  margin-top: 32px;
+  margin-top: 28px;
   flex-wrap: wrap;
 }
 
 .upload-container button {
-  background: radial-gradient(circle at top left, #38bdf8 0%, #0ea5e9 45%, #0369a1 100%);
+  background: linear-gradient(180deg, var(--fp-brand-700) 0%, var(--fp-brand-800) 100%);
   border: none;
-  color: #fff;
-  padding: 14px 32px;
-  border-radius: 14px;
+  color: var(--fp-text-inverse);
+  padding: 12px 28px;
+  border-radius: var(--fp-radius-md);
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 600;
   font-family: inherit;
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-  letter-spacing: 0.02em;
-  min-width: 150px;
-  box-shadow: 0 18px 40px rgba(56, 189, 248, 0.45);
+  transition: transform var(--fp-transition), box-shadow var(--fp-transition), opacity var(--fp-transition);
+  min-width: 140px;
+  box-shadow: var(--fp-shadow-md);
 }
 
 .upload-container button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 24px 55px rgba(56, 189, 248, 0.6);
+  transform: translateY(-1px);
+  box-shadow: var(--fp-shadow-lg);
 }
 
 .upload-container button:disabled {
-  opacity: 0.65;
+  opacity: 0.55;
   cursor: not-allowed;
   transform: none;
 }
 
-.upload-container button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
 .upload-container button.btn-export {
-  background: radial-gradient(circle at top left, #22c55e 0%, #16a34a 40%, #15803d 100%);
-  color: #fff;
-  box-shadow: 0 18px 40px rgba(34, 197, 94, 0.45);
-}
-
-.upload-container button.btn-export:hover {
-  box-shadow: 0 24px 55px rgba(34, 197, 94, 0.65);
+  background: linear-gradient(180deg, var(--fp-success) 0%, #047857 100%);
 }
 
 .upload-container .loading-spinner {
   display: inline-block;
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.35);
   border-radius: 50%;
   border-top-color: #fff;
   animation: spin 0.7s linear infinite;
@@ -213,35 +176,36 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.upload-status-hint {
+  margin: 12px 0 0;
+  font-size: 0.875rem;
+  color: var(--fp-text-muted);
+  line-height: 1.45;
 }
 
 .error-message {
-  background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.12) 0%, rgba(15, 23, 42, 1) 65%);
-  color: #fecaca;
-  padding: 16px 24px;
-  border-radius: 14px;
-  margin-top: 24px;
+  background: var(--fp-danger-soft);
+  color: var(--fp-danger);
+  padding: 14px 20px;
+  border-radius: var(--fp-radius-md);
+  margin-top: 20px;
   font-weight: 600;
-  font-size: 0.95rem;
-  border: 1px solid rgba(248, 113, 113, 0.7);
-  animation: shake 0.4s ease;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  75% { transform: translateX(6px); }
+  font-size: 0.9rem;
+  border: 1px solid #fecaca;
 }
 
 @media (max-width: 768px) {
   .App__main {
-    padding: 0 16px 36px;
+    padding: calc(var(--fp-nav-height) + 16px) 16px 32px;
   }
 
   .upload-container {
-    padding: 32px 24px;
-    border-radius: 20px;
+    padding: 28px 22px;
   }
 
   .button-group {

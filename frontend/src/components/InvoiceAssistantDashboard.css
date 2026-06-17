@@ -11,13 +11,12 @@
 }
 
 .ia__card {
-  background: radial-gradient(circle at top left, #0b1220, #020617);
-  border-radius: 24px;
-  padding: 24px 24px 20px;
-  box-shadow:
-    0 18px 40px rgba(15, 23, 42, 0.7),
-    0 0 0 1px rgba(30, 64, 175, 0.6);
-  color: #e5e7eb;
+  background: var(--fp-panel);
+  border-radius: var(--fp-radius-2xl);
+  padding: 24px;
+  box-shadow: var(--fp-shadow-lg), var(--fp-shadow-inset);
+  border: 1px solid var(--fp-border-strong);
+  color: var(--fp-text);
 }
 
 .ia__title {
@@ -29,7 +28,7 @@
 
 .ia__subtitle {
   margin: 0 0 16px;
-  color: #9ca3af;
+  color: var(--fp-text-muted);
   font-weight: 500;
   font-size: 0.95rem;
 }
@@ -247,19 +246,19 @@
   width: 100%;
   resize: vertical;
   padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid #1e293b;
+  border-radius: var(--fp-radius-md);
+  border: 1px solid var(--fp-border-strong);
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
-  background: rgba(15, 23, 42, 0.9);
-  color: #e5e7eb;
+  background: var(--fp-surface);
+  color: var(--fp-text);
 }
 
 .ia__textarea:focus {
   outline: none;
-  border-color: rgba(59, 130, 246, 0.7);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  border-color: var(--fp-primary);
+  box-shadow: 0 0 0 3px var(--fp-primary-ring);
 }
 
 .ia__actions {
@@ -283,25 +282,26 @@
 
 .ia__select {
   padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid #1e293b;
-  font-weight: 700;
-  background: #020617;
-  color: #e5e7eb;
+  border-radius: var(--fp-radius-md);
+  border: 1px solid var(--fp-border-strong);
+  font-weight: 600;
+  background: var(--fp-surface);
+  color: var(--fp-text);
+  font-family: inherit;
 }
 
 .ia__btn {
-  background: linear-gradient(180deg, #1d4ed8 0%, #1e293b 100%);
+  background: linear-gradient(180deg, var(--fp-primary) 0%, var(--fp-primary-hover) 100%);
   border: none;
-  color: #fff;
+  color: var(--fp-text-inverse);
   padding: 10px 20px;
-  border-radius: 14px;
+  border-radius: var(--fp-radius-md);
   cursor: pointer;
   font-size: 0.92rem;
   font-weight: 700;
   font-family: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);
+  transition: transform var(--fp-transition), box-shadow var(--fp-transition), opacity var(--fp-transition);
+  box-shadow: var(--fp-shadow-sm);
 }
 
 .ia__btn:hover:not(:disabled) {
@@ -824,7 +824,7 @@
 
 .ia.ia--light .ia__textarea,
 .ia.ia--light .ia__select {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   color: #0f172a;
 }
@@ -835,7 +835,7 @@
 }
 
 .ia.ia--light .ia__chip {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #cbd5e1;
   color: #475569;
 }
@@ -847,7 +847,7 @@
 }
 
 .ia.ia--light .ia__suggestions {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
 }
@@ -861,7 +861,7 @@
 }
 
 .ia.ia--light .ia__kpi {
-  background: #fff;
+  background: var(--fp-surface-input);
   border: 1px solid #e2e8f0;
   color: #0f172a;
 }
@@ -871,7 +871,7 @@
 }
 
 .ia.ia--light .ia__chart {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
 }
 
@@ -885,7 +885,7 @@
 
 .ia.ia--light .ia__table,
 .ia.ia--light .ia__table thead th {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   color: #0f172a;
 }
@@ -936,7 +936,7 @@
 }
 
 .ia.ia--light .ia__chartFilterBtn {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   color: #475569;
 }
@@ -954,7 +954,7 @@
 }
 
 .ia.ia--light .ia__chartFilterPanel {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
 }
@@ -983,7 +983,7 @@
 }
 
 .ia.ia--light .ia__voiceBtn {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   color: #475569;
 }
@@ -1023,7 +1023,7 @@
 }
 
 .ia.ia--light .ia__themeToggle {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   color: #0f172a;
 }
@@ -1033,7 +1033,7 @@
 }
 
 .ia.ia--light .ia__pageBtn {
-  background: #fff;
+  background: var(--fp-surface-input);
   border-color: #e2e8f0;
   color: #0f172a;
 }
@@ -1044,6 +1044,158 @@
 
 .ia.ia--light .ia__pageInfo {
   color: #64748b;
+}
+
+.ia__card--invoices {
+  margin-bottom: 0;
+}
+
+.ia__invoiceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.ia__invoiceCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(15, 23, 42, 0.75);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.ia__invoiceCard:hover {
+  border-color: rgba(56, 189, 248, 0.75);
+  transform: translateY(-2px);
+}
+
+.ia__invoiceCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ia__invoiceCardNum {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--fp-text);
+}
+
+.ia__invoiceCardAmount {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--fp-primary);
+  white-space: nowrap;
+}
+
+.ia__invoiceCardMeta {
+  font-size: 0.82rem;
+  color: var(--fp-text-muted);
+}
+
+.ia__invoiceCardLink {
+  margin-top: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--fp-accent);
+}
+
+.ia.ia--light .ia__invoiceCard {
+  background: #f8fafc;
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+.ia.ia--light .ia__invoiceCardNum {
+  color: #0f172a;
+}
+
+/* ——— Thème clair (panneaux restants) ——— */
+.ia__kpi,
+.ia__panel,
+.ia__chartWrap,
+.ia__tableWrap,
+.ia__rightCard {
+  background: var(--fp-surface) !important;
+  border: 1px solid var(--fp-border) !important;
+  box-shadow: var(--fp-shadow-sm) !important;
+  color: var(--fp-text) !important;
+}
+
+.ia__kpiLabel,
+.ia__vizLabel,
+.ia__quickFiltersLabel,
+.ia__historyLabel {
+  color: var(--fp-text-muted) !important;
+}
+
+.ia__kpiValue {
+  color: var(--fp-text) !important;
+}
+
+.ia__chip {
+  background: var(--fp-surface) !important;
+  border-color: var(--fp-border-strong) !important;
+  color: var(--fp-text-secondary) !important;
+}
+
+.ia__chip:hover:not(:disabled) {
+  background: var(--fp-primary-soft) !important;
+  border-color: var(--fp-primary) !important;
+  color: var(--fp-primary) !important;
+}
+
+.ia__voiceBtn,
+.ia__themeToggle {
+  background: var(--fp-surface) !important;
+  border-color: var(--fp-border-strong) !important;
+  color: var(--fp-text-secondary) !important;
+}
+
+.ia__suggestions {
+  background: var(--fp-surface) !important;
+  border-color: var(--fp-border) !important;
+  box-shadow: var(--fp-shadow-lg) !important;
+}
+
+.ia__suggestionBtn {
+  color: var(--fp-text) !important;
+}
+
+.ia__suggestionBtn:hover {
+  background: var(--fp-primary-soft) !important;
+}
+
+.ia__invoiceCard {
+  background: var(--fp-surface-hover) !important;
+  border-color: var(--fp-border) !important;
+}
+
+.ia__invoiceCard:hover {
+  border-color: var(--fp-primary) !important;
+  box-shadow: var(--fp-shadow-md) !important;
+}
+
+.ia table th {
+  background: var(--fp-surface-hover) !important;
+  color: var(--fp-text-muted) !important;
+}
+
+.ia table td {
+  color: var(--fp-text) !important;
+  border-color: var(--fp-border) !important;
+}
+
+.ia__chartPlaceholder {
+  color: var(--fp-text-muted) !important;
+  background: var(--fp-surface-hover) !important;
+  border-color: var(--fp-border) !important;
 }
 
 @media (max-width: 900px) {

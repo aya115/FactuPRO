@@ -2,6 +2,19 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import api from "../api";
 const STORAGE_KEY = "invoice_auth";
 
+function readStoredAuth() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.token) return null;
+    return parsed;
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
+  }
+}
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -10,44 +23,47 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-  
+    const stored = readStoredAuth();
+
     if (!stored) {
       setLoading(false);
       return;
     }
-  
-    try {
-      const { token: t } = JSON.parse(stored);
-  
-      setToken(t);
-  
-      api
-        .get("/auth/me", {
-          headers: {
-            Authorization: `Bearer ${t}`
-          }
-        })
-        .then((res) => {
-          setUser(res.data?.user || null);
-        })
-        .catch(() => {
+
+    setToken(stored.token);
+    if (stored.user) {
+      setUser(stored.user);
+    }
+
+    api
+      .get("/auth/me", {
+        headers: { Authorization: `Bearer ${stored.token}` },
+      })
+      .then((res) => {
+        const freshUser = res.data?.user || stored.user || null;
+        setUser(freshUser);
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({ token: stored.token, user: freshUser })
+        );
+      })
+      .catch((err) => {
+        if (err.response?.status === 401) {
           localStorage.removeItem(STORAGE_KEY);
           setToken(null);
           setUser(null);
-        })
-        .finally(() => setLoading(false));
-  
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-      setLoading(false);
-    }
+        }
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const saveAuth = (newToken, newUser) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: newToken, user: newUser }));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ token: newToken, user: newUser })
+    );
   };
 
   const login = async (email, password) => {
@@ -55,12 +71,12 @@ export function AuthProvider({ children }) {
       email,
       password,
     });
-  
-    const { token, user } = res.data;
-  
-    saveAuth(token, user);
-  
-    return user;   // ✅ retourne bien l’utilisateur
+
+    const { token: newToken, user: newUser } = res.data;
+
+    saveAuth(newToken, newUser);
+
+    return newUser;
   };
 
   const signup = async (email, password, fullName, role) => {

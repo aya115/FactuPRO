@@ -6,6 +6,7 @@ Version hybride:
 - règles métiers déterministes (cohérence calculs / TVA)
 - score sémantique description <-> catégorie via embeddings (sans historique)
 """
+import os
 import re
 from typing import List, Dict
 
@@ -20,7 +21,8 @@ TOLERANCE_PCT = 1.0
 VALID_VAT_RATES = [5.0, 10.0, 20.0, 2.1, 0]
 EMBEDDING_MODEL_NAME = "paraphrase-multilingual-MiniLM-L12-v2"
 SEMANTIC_SIMILARITY_MIN = 0.33
-CLASSIFICATION_PRECISION_MIN = 0.50
+# Après reranking hybride, beaucoup de scores restent entre 0.35–0.55 ; 0.42 limite les faux positifs « faible précision ».
+CLASSIFICATION_PRECISION_MIN = float(os.environ.get("CLASSIFICATION_PRECISION_MIN", "0.42"))
 
 # pondérations du score global [0..1]
 WEIGHTS = {
@@ -293,6 +295,8 @@ def detect_anomalies(invoice):
         desc = (it.get("description") or "").strip()
         category = (it.get("category") or "").strip()
         if not desc or not category:
+            continue
+        if category == "Non classé" or it.get("classification_source") == "fallback":
             continue
         sim = _semantic_similarity(desc, category)
         if sim is None:

@@ -31,7 +31,8 @@ export default function UploadInvoice() {
     formData.append("file", file);
 
     try {
-      const res = await api.post("/upload", formData);
+      // Plusieurs pages PDF + Groq + 1er chargement embeddings : peut dépasser 5 min sur machine modeste
+      const res = await api.post("/upload", formData, { timeout: 900000 });
       setResult(res.data);
     } catch (err) {
       setError("Erreur: " + (err.response?.data?.error || err.message));
@@ -84,6 +85,13 @@ export default function UploadInvoice() {
           </button>
         )}
       </div>
+
+      {loading && (
+        <p className="upload-hint" role="status">
+          PDF multi-pages, OCR et appel IA : le premier traitement peut prendre plusieurs minutes
+          (chargement du modèle de classification). Ne fermez pas l’onglet.
+        </p>
+      )}
 
       {error && <div className="error-message">{error}</div>}
       {result && <InvoiceResult data={result} />}

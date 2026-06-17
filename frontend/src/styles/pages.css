@@ -1,0 +1,41 @@
+/**
+ * Coquilles des pages internes (dashboard, factures, assistant…)
+ */
+
+.App__main:not(.App__main--home) {
+  background: transparent;
+}
+
+/* Messagerie : empêcher le scroll de page qui masque le champ de saisie */
+.App__main:has(.messenger-page) {
+  padding-bottom: 16px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Cartes principales des modules */
+.dashboard,
+.invoices-cards__container,
+.metrics-card,
+.powerbi-page {
+  background: var(--fp-panel) !important;
+  border-color: var(--fp-border-strong) !important;
+}
+
+.ia__card,
+.ia__kpi,
+.ia__panel,
+.ia__chartWrap,
+.ia__tableWrap,
+.ia__rightCard {
+  background: var(--fp-surface-raised) !important;
+  border-color: var(--fp-border-strong) !important;
+}
+
+.dashboard-container {
+  background: var(--fp-panel-solid);
+  border-radius: var(--fp-radius-2xl);
+  border: 1px solid var(--fp-border-strong);
+  box-shadow: var(--fp-shadow-lg);
+  padding: 32px;
+}

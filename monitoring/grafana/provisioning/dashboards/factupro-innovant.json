@@ -1,0 +1,224 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [
+    {
+      "title": "Monitoring technique (détail)",
+      "type": "link",
+      "url": "/d/factupro-tech",
+      "icon": "external link"
+    }
+  ],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 200,
+      "title": "🟢 Santé & disponibilité (temps réel)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "color": "red", "index": 0, "text": "DOWN" } }, "type": "value" },
+            { "options": { "1": { "color": "green", "index": 1, "text": "UP" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": 0 }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "id": 201,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"factupro-backend\"}", "instant": true, "refId": "A" }],
+      "title": "Backend API",
+      "type": "stat",
+      "description": "Disponibilité instantanée du backend — non disponible dans Power BI."
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1, "max": 100, "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": 0 }, { "color": "orange", "value": 95 }, { "color": "green", "value": 99 }] } } },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "id": 202,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "avg_over_time(up{job=\"factupro-backend\"}[6h]) * 100", "legendFormat": "Dispo 6h", "refId": "A" }],
+      "title": "Disponibilité 6 h",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1, "max": 100, "min": 0, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "orange", "value": 15 }, { "color": "red", "value": 30 }] } } },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "id": 204,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdMarkers": true },
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(factupro_upload_errors_total[5m]) / (rate(factupro_uploads_total[5m]) + rate(factupro_upload_errors_total[5m]) + 1e-9) * 100", "refId": "A" }],
+      "title": "Taux échec upload (live)",
+      "type": "gauge",
+      "description": "Erreurs techniques OCR/upload — voir Power BI pour l'analyse métier des factures."
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "custom": { "fillOpacity": 0, "lineWidth": 2 }, "mappings": [{ "options": { "0": { "color": "red", "index": 0, "text": "DOWN" } }, "type": "value" }, { "options": { "1": { "color": "green", "index": 1, "text": "UP" } }, "type": "value" }] } },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "id": 247,
+      "options": { "colWidth": 0.9, "legend": { "displayMode": "list", "placement": "bottom" }, "rowHeight": 0.9, "showValue": "never" },
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "up{job=\"factupro-backend\"}", "legendFormat": "Backend", "refId": "A" }],
+      "title": "Timeline disponibilité",
+      "type": "state-timeline"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 220,
+      "title": "🔴 Erreurs techniques upload (Prometheus)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 2 } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 221,
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(factupro_upload_errors_total[5m]) * 60", "legendFormat": "Erreurs upload / min", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(factupro_uploads_total[5m]) * 60", "legendFormat": "Uploads OK / min", "refId": "B" }
+      ],
+      "title": "Débit erreurs vs succès (par minute)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1, "max": 100, "min": 0 } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 222,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(factupro_upload_errors_total[5m]) / (rate(factupro_uploads_total[5m]) + rate(factupro_upload_errors_total[5m]) + 1e-9) * 100", "legendFormat": "% échec upload", "refId": "A" }],
+      "title": "Taux d'échec upload dans le temps",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 } },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 14 },
+      "id": 223,
+      "options": { "legend": { "displayMode": "list", "placement": "right" }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "increase(factupro_uploads_total[6h])", "legendFormat": "Succès", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "increase(factupro_upload_errors_total[6h])", "legendFormat": "Erreurs", "refId": "B" }
+      ],
+      "title": "Répartition succès / erreurs (6 h)",
+      "type": "piechart"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 } },
+      "gridPos": { "h": 7, "w": 16, "x": 8, "y": 14 },
+      "id": 224,
+      "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "increase(factupro_upload_errors_total[$__range])", "legendFormat": "Erreurs période", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "increase(factupro_uploads_total[$__range])", "legendFormat": "Succès période", "refId": "B" }
+      ],
+      "title": "Volume uploads (période sélectionnée)",
+      "type": "bargauge",
+      "description": "Compteurs techniques session — corrections comptable : voir Power BI (/analytics/bi)."
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 21 },
+      "id": 230,
+      "title": "⚡ Performance pipeline (session conteneur)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "fillOpacity": 30, "gradientMode": "opacity", "lineWidth": 2 } } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "id": 231,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "factupro_avg_processing_seconds", "legendFormat": "Temps moyen / facture", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "deriv(factupro_avg_processing_seconds[30m])", "legendFormat": "Dérivée (tendance 30m)", "refId": "B" }
+      ],
+      "title": "Latence pipeline & tendance",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "id": 232,
+      "options": { "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "factupro_invoices_processed_total", "legendFormat": "Factures session", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "factupro_invoice_lines_total", "legendFormat": "Lignes session", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "factupro_processing_seconds_total", "legendFormat": "Temps cumulé (s)", "refId": "C" }
+      ],
+      "title": "Volume traité (session conteneur)",
+      "type": "timeseries",
+      "description": "Cumul depuis le dernier redémarrage Docker — volumes métier historiques : Power BI."
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 } },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 30 },
+      "id": 233,
+      "options": {
+        "calculate": false,
+        "cellGap": 2,
+        "color": { "mode": "scheme", "scheme": "Spectral" },
+        "yAxis": { "unit": "short" }
+      },
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "sum(increase(factupro_uploads_total[$__rate_interval]))", "legendFormat": "Uploads", "refId": "A", "format": "time_series" }],
+      "title": "Heatmap activité uploads",
+      "type": "heatmap"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 37 },
+      "id": 240,
+      "title": "🤖 Anomalies ML (runtime — complément Power BI)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 2 } },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 38 },
+      "id": 245,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "factupro_anomalies_total", "legendFormat": "Anomalies ML (cumul session)", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "factupro_anomaly_rate_pct", "legendFormat": "Taux anomalies % (session)", "refId": "B" }
+      ],
+      "title": "Détection d'anomalies (temps réel)",
+      "type": "timeseries",
+      "description": "Suivi ops du modèle ML en cours de session. Analyse métier des anomalies : Power BI."
+    },
+    {
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 45 },
+      "id": 248,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
+        "content": "**Analyse métier** (OCR, corrections comptable, alertes superviseur, catégories, assistant IA) → **Power BI** dans l'app : `/analytics/bi`\n\nCe dashboard Grafana ne garde que le **monitoring technique temps réel** (santé API, erreurs upload, latence pipeline) non couvert par Power BI.",
+        "mode": "markdown"
+      },
+      "title": "Complémentarité Power BI",
+      "type": "text"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": ["factupro", "prometheus", "exploitation", "temps-reel", "technique"],
+  "templating": { "list": [] },
+  "time": { "from": "now-7d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "FactuPRO — Dashboard innovant",
+  "uid": "factupro-innovant",
+  "version": 4,
+  "description": "Monitoring technique temps réel (Prometheus) — sans redondance Power BI. Santé API, erreurs upload, performance pipeline, anomalies session."
+}

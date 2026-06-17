@@ -19,6 +19,7 @@ export default function LandingPage() {
     <div className="home">
       {/* Hero */}
       <section className="home__hero">
+        <div className="home__hero-inner">
         <div className="home__hero-content">
           
           <span className="home__badge">Powered by IA · OCR & LLM</span>
@@ -29,7 +30,20 @@ export default function LandingPage() {
             Extraction automatique, classification et analyse de vos documents comptables.
             Gagnez du temps et réduisez les erreurs.
           </p>
-          
+          <div className="home__hero-actions">
+            <Link
+              to={isAuthenticated ? "/dashboard" : "/signup"}
+              className="home__btn home__btn--primary"
+            >
+              {isAuthenticated ? "Ouvrir le tableau de bord" : "Créer un compte"}
+            </Link>
+            <Link
+              to={isAuthenticated ? "/assistant" : "/signin"}
+              className="home__btn home__btn--outline"
+            >
+              {isAuthenticated ? "Assistant IA" : "Se connecter"}
+            </Link>
+          </div>
         </div>
         <div className="home__hero-visual">
           <div className="home__hero-orbit home__hero-orbit--blue" />
@@ -46,6 +60,7 @@ export default function LandingPage() {
               <div className="home__mockup-row home__mockup-row--short" />
             </div>
           </div>
+        </div>
         </div>
       </section>
 

@@ -26,9 +26,8 @@ MIN_MINOR_CLASS = 100
 RARE_THRESHOLD = 30
 
 FORBIDDEN_WORDS = [
-    "dress","jeans","shirt","t-shirt","skirt",
-    "lipstick","makeup","perfume","toy",
-    "jewelry","cosmetic","fashion"
+    "lipstick", "makeup", "perfume", "toy",
+    "jewelry", "cosmetic",
 ]
 
 
@@ -110,6 +109,21 @@ def train(csv_path=None):
     print("\nAccuracy:", accuracy_score(y_test, y_pred))
     print("\nClassification report:")
     print(classification_report(y_test, y_pred))
+
+    X_all_emb = embedder.encode(
+        X,
+        normalize_embeddings=True,
+        show_progress_bar=True,
+    )
+    pipeline = {
+        "embedding_model_name": EMBEDDING_MODEL,
+        "classifier": clf,
+        "X_ref": X_all_emb,
+        "y_ref": np.array(y),
+        "ref_descriptions": X,
+    }
+    joblib.dump(pipeline, MODEL_PATH)
+    print(f"\nModèle sauvegardé : {MODEL_PATH}")
 
 if __name__ == "__main__":
     train()

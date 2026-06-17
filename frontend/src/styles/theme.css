@@ -1,0 +1,91 @@
+/**
+ * FactuPRO — palette harmonisée (marine + bleu + teal)
+ */
+:root {
+  --fp-font: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --fp-font-mono: "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+
+  /* Marque */
+  --fp-brand-950: #071525;
+  --fp-brand-900: #0c2340;
+  --fp-brand-800: #152d4a;
+  --fp-brand-700: #1e3d5f;
+  --fp-brand-600: #245078;
+  --fp-brand-500: #2d6a9f;
+  --fp-brand-accent: #0e7490;
+  --fp-brand-accent-hover: #0c636c;
+  --fp-brand-accent-soft: #cce8ee;
+
+  /* Fonds page */
+  --fp-bg: #c8d4e6;
+  --fp-bg-muted: #b8c8de;
+  --fp-bg-subtle:
+    radial-gradient(ellipse 100% 70% at 0% 0%, rgba(21, 45, 74, 0.12), transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 10%, rgba(14, 116, 144, 0.1), transparent 50%),
+    linear-gradient(180deg, #d4ddea 0%, #c5d2e4 50%, #bac9de 100%);
+
+  /* Surfaces (teinte marine, pas blanc) */
+  --fp-surface: #c5d3e6;
+  --fp-surface-hover: #b9c9df;
+  --fp-surface-raised: #dce5f2;
+  --fp-surface-inset: #b0c0d6;
+  --fp-surface-input: #e8eef6;
+
+  --fp-panel: linear-gradient(168deg, #c8d5e8 0%, #b8c8de 45%, #adbed4 100%);
+  --fp-panel-solid: #bfcfdf;
+
+  --fp-hero-from: var(--fp-brand-900);
+  --fp-hero-mid: var(--fp-brand-800);
+  --fp-hero-to: var(--fp-brand-accent);
+  --fp-hero-gradient: linear-gradient(
+    128deg,
+    var(--fp-brand-900) 0%,
+    var(--fp-brand-800) 40%,
+    var(--fp-brand-700) 68%,
+    var(--fp-brand-accent) 100%
+  );
+
+  --fp-border: #9aafc8;
+  --fp-border-strong: #7f97b4;
+
+  --fp-text: #0c2340;
+  --fp-text-secondary: #1e3d5f;
+  --fp-text-muted: #4a627d;
+  --fp-text-inverse: #ffffff;
+  --fp-text-on-hero: rgba(255, 255, 255, 0.95);
+  --fp-text-on-hero-muted: rgba(220, 232, 245, 0.85);
+
+  /* Alias sémantiques = marque */
+  --fp-primary: var(--fp-brand-700);
+  --fp-primary-hover: var(--fp-brand-800);
+  --fp-primary-soft: #c5d9ef;
+  --fp-primary-ring: rgba(30, 61, 95, 0.28);
+
+  --fp-accent: var(--fp-brand-accent);
+  --fp-accent-soft: var(--fp-brand-accent-soft);
+
+  --fp-success: var(--fp-brand-accent);
+  --fp-success-soft: var(--fp-brand-accent-soft);
+
+  --fp-warning: #b45309;
+  --fp-warning-soft: #fde6b8;
+  --fp-danger: #b91c1c;
+  --fp-danger-soft: #f8d0d0;
+
+  --fp-radius-sm: 8px;
+  --fp-radius-md: 12px;
+  --fp-radius-lg: 16px;
+  --fp-radius-xl: 20px;
+  --fp-radius-2xl: 24px;
+
+  --fp-shadow-xs: 0 1px 2px rgba(7, 21, 37, 0.08);
+  --fp-shadow-sm: 0 2px 10px rgba(7, 21, 37, 0.1);
+  --fp-shadow-md: 0 8px 28px rgba(7, 21, 37, 0.12);
+  --fp-shadow-lg: 0 16px 44px rgba(7, 21, 37, 0.14);
+  --fp-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --fp-shadow-hero-mockup: 0 32px 64px rgba(0, 0, 0, 0.28);
+
+  --fp-nav-height: 72px;
+  --fp-nav-bg: linear-gradient(180deg, var(--fp-brand-900) 0%, var(--fp-brand-800) 100%);
+  --fp-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}

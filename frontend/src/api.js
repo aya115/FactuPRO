@@ -20,8 +20,11 @@ api.interceptors.response.use(
   (r) => r,
   (err) => {
     if (err.response?.status === 401) {
+      const url = err.config?.url || "";
       localStorage.removeItem("invoice_auth");
-      window.location.href = "/signin";
+      if (!url.includes("/auth/me") && !window.location.pathname.startsWith("/signin")) {
+        window.location.assign("/signin");
+      }
     }
     return Promise.reject(err);
   }

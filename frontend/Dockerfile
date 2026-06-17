@@ -1,9 +1,18 @@
+# syntax=docker/dockerfile:1
 FROM node:20-alpine AS build
 
 WORKDIR /app
 
+# Réduit fortement le temps de `react-scripts build` (surtout sous Docker Desktop / Windows).
+ENV GENERATE_SOURCEMAP=false
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV SKIP_PREFLIGHT_CHECK=true
+# Évite le ralentissement / swap quand Webpack + Terser consomment beaucoup de RAM dans le conteneur
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
 COPY package.json package-lock.json .npmrc ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --no-audit --fund=false
 
 COPY . .
 

@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import api from "../api";
 
 import ReactMarkdown from "react-markdown";
@@ -45,6 +46,110 @@ const SUGGESTED_QUESTIONS = [
 
 function isNumber(x) {
   return typeof x === "number" && Number.isFinite(x);
+}
+
+function cellNumeric(row, col) {
+  if (!col || !row) return false;
+  const v = row[col];
+  if (isNumber(v)) return true;
+  if (v == null || v === "") return false;
+  return Number.isFinite(Number(v));
+}
+
+function cellNumber(row, col) {
+  const v = row?.[col];
+  if (isNumber(v)) return v;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function resolveColumn(cols, name) {
+  if (!name || name === "__composite_period__") return null;
+  const key = String(name).toLowerCase();
+  return cols.find((c) => c.toLowerCase() === key) || null;
+}
+
+const AMOUNT_COL_RE =
+  /gross|ttc|montant|amount|total_net|total_vat|^net$|^total$/i;
+const SKIP_VALUE_COL_RE =
+  /_id$|^id$|invoice_year|^year$|invoice_month|^month$|count$|num_lignes/i;
+
+function findColumn(cols, patterns) {
+  for (const c of cols) {
+    if (patterns.some((re) => re.test(c))) return c;
+  }
+  return null;
+}
+
+function pickAmountColumn(cols, rows) {
+  const prefs = [
+    "total_gross",
+    "total_ttc",
+    "montant_ttc",
+    "gross",
+    "total_net",
+    "total",
+  ];
+  for (const p of prefs) {
+    const c = cols.find((x) => x.toLowerCase() === p);
+    if (c && rows.some((r) => cellNumeric(r, c))) return c;
+  }
+  for (const c of cols) {
+    if (SKIP_VALUE_COL_RE.test(c)) continue;
+    if (AMOUNT_COL_RE.test(c) && rows.some((r) => cellNumeric(r, c))) return c;
+  }
+  return null;
+}
+
+function pickLabelColumn(cols, rows, valueCol, questionText = "") {
+  const q = (questionText || "").toLowerCase();
+  const numC = findColumn(cols, [/invoice_number/i, /numero_facture/i]);
+  const dateC = findColumn(cols, [/issue_date/i, /date_of_issue/i]);
+  const yearC = findColumn(cols, [/invoice_year/i, /^year$/i, /calendar_year/i]);
+  const monthC = findColumn(cols, [/invoice_month/i, /^month$/i, /month_num/i]);
+
+  if (numC && dateC && /mois|année|annee|month|year/.test(q)) {
+    return { type: "dateAndNumber", dateC, numC };
+  }
+  if (yearC && monthC) {
+    return { type: "composite", yearC, monthC, numC };
+  }
+
+  const prefs = [/invoice_number/i, /numero/i, /seller_name/i, /client_name/i, /category/i];
+  for (const re of prefs) {
+    const c = findColumn(cols, [re]);
+    if (c && c !== valueCol) return c;
+  }
+  for (const c of cols) {
+    if (c === valueCol || SKIP_VALUE_COL_RE.test(c)) continue;
+    const v = rows[0]?.[c];
+    if (!cellNumeric(rows[0], c) && v != null && v !== "") return c;
+  }
+  return null;
+}
+
+function formatRowLabel(row, labelSpec) {
+  if (!labelSpec) return "—";
+  if (typeof labelSpec === "string") {
+    const v = row[labelSpec];
+    return v === null || v === undefined || v === "" ? "—" : String(v);
+  }
+  if (labelSpec.type === "dateAndNumber") {
+    const { dateC, numC } = labelSpec;
+    const d = row[dateC] != null ? String(row[dateC]).slice(0, 10) : "";
+    const num = numC && row[numC] ? String(row[numC]) : "";
+    return [d, num].filter(Boolean).join(" · ") || "—";
+  }
+  const { yearC, monthC, numC } = labelSpec;
+  const y = row[yearC];
+  const m = row[monthC];
+  const period = y != null && m != null ? `${y}-${String(m).padStart(2, "0")}` : "";
+  const num = numC && row[numC] ? String(row[numC]) : "";
+  return [period, num].filter(Boolean).join(" · ") || "—";
+}
+
+function findInvoiceIdColumn(cols) {
+  return cols.find((c) => /^invoice_id$/i.test(c)) || cols.find((c) => /^id$/i.test(c));
 }
 
 function guessVizType(question) {
@@ -181,28 +286,48 @@ export default function InvoiceAssistantDashboard() {
     speechSynthRef.current = u;
     window.speechSynthesis.speak(u);
   };
-//Fonction lecture vocale :
-  const speakResponse = async () => {
-    if (!result || result?.clarification) return;
+
+  const buildSpeechText = () => {
+    if (!result || result?.clarification) return "";
     const parts = [];
     if (result.commentaire) parts.push(stripMarkdown(result.commentaire));
     if (result.explanation) parts.push(result.explanation);
     if (result.kpis?.length) {
-      const kpiText = result.kpis.slice(0, 4).map((k) => `${k.label} : ${k.value}`).join(". ");
+      const kpiText = result.kpis
+        .slice(0, 4)
+        .map((k) => `${k.label} : ${k.value}`)
+        .join(". ");
       parts.push("Résumé : " + kpiText);
     }
-    const text = parts.join(" ");
-    if (!text.trim()) return;
+    return parts.join(" ").trim();
+  };
+
+  const speakResponse = async () => {
+    const text = buildSpeechText();
+    if (!text) return;
 
     stopSpeaking();
+    setIsSpeaking(true);
+
+    const fallbackBrowser = () => {
+      if (ttsObjectUrlRef.current) {
+        URL.revokeObjectURL(ttsObjectUrlRef.current);
+        ttsObjectUrlRef.current = null;
+      }
+      speechSynthRef.current = null;
+      speakResponseWithBrowser(text);
+    };
 
     try {
-      setIsSpeaking(true);
-      const res = await api.post(//Backend génère audio
+      const res = await api.post(
         "/audio/speak",
         { text: text.slice(0, 4000) },
         { responseType: "blob", timeout: 120000 }
       );
+      if (!res.data || res.data.size < 100) {
+        fallbackBrowser();
+        return;
+      }
       const url = URL.createObjectURL(res.data);
       ttsObjectUrlRef.current = url;
       const audio = new Audio(url);
@@ -215,20 +340,14 @@ export default function InvoiceAssistantDashboard() {
         setIsSpeaking(false);
         speechSynthRef.current = null;
       };
-      audio.onerror = () => {
-        if (ttsObjectUrlRef.current) {
-          URL.revokeObjectURL(ttsObjectUrlRef.current);
-          ttsObjectUrlRef.current = null;
-        }
-        setIsSpeaking(false);
-        speechSynthRef.current = null;
-        speakResponseWithBrowser(text);
-      };
-      await audio.play();
+      audio.onerror = fallbackBrowser;
+      try {
+        await audio.play();
+      } catch {
+        fallbackBrowser();
+      }
     } catch {
-      setIsSpeaking(false);
-      speechSynthRef.current = null;
-      speakResponseWithBrowser(text);
+      fallbackBrowser();
     }
   };
 
@@ -248,9 +367,14 @@ export default function InvoiceAssistantDashboard() {
   };
 
   useEffect(() => {
-    const voices = () => window.speechSynthesis?.getVoices?.();
-    if (window.speechSynthesis && !voices()?.length) {
-      window.speechSynthesis.onvoiceschanged = voices;
+    const loadVoices = () => {
+      try {
+        window.speechSynthesis?.getVoices?.();
+      } catch (_) {}
+    };
+    loadVoices();
+    if (window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
     }
     return () => {
       window.speechSynthesis?.cancel();
@@ -362,39 +486,69 @@ export default function InvoiceAssistantDashboard() {
   const kpis = result?.kpis || [];
   const viz = result?.viz || {};
 
-  const { labelColumn, valueColumn, chartData, chartType } = useMemo(() => {
+  const displayMode = result?.displayMode || "table";
+  const invoiceCards = useMemo(() => {
+    if (!rows.length) return [];
+    const idCol = findInvoiceIdColumn(columns);
+    const amountCol = pickAmountColumn(columns, rows);
+    if (!idCol || !amountCol) return [];
+    const numCol = findColumn(columns, [/invoice_number/i]);
+    const sellerCol = findColumn(columns, [/seller_name/i]);
+    const clientCol = findColumn(columns, [/client_name/i]);
+    const dateCol = findColumn(columns, [/issue_date/i, /date_of_issue/i]);
+    return rows.slice(0, 12).map((r) => ({
+      id: r[idCol],
+      number: numCol ? r[numCol] : null,
+      amount: r[amountCol],
+      seller: sellerCol ? r[sellerCol] : null,
+      client: clientCol ? r[clientCol] : null,
+      date: dateCol ? r[dateCol] : null,
+    }));
+  }, [columns, rows]);
+
+  const chartQuestion = result?.question || question;
+
+  const { labelColumn, valueColumn, chartData, chartType, labelSpec } = useMemo(() => {
     const cols = columns;
     const rs = rows;
     const explicitType = typeof viz.type === "string" ? viz.type.toLowerCase() : "";
-    const requestedType = (vizOverride || explicitType || guessVizType(question)).toLowerCase();
     const explicitLabel = typeof viz.labelColumn === "string" ? viz.labelColumn : "";
     const explicitValue = typeof viz.valueColumn === "string" ? viz.valueColumn : "";
 
-    let labelCol = explicitLabel && cols.includes(explicitLabel) ? explicitLabel : "";
-    let valueCol = explicitValue && cols.includes(explicitValue) ? explicitValue : "";
-
-    if (!valueCol && rs.length > 0) {
-      for (const c of cols) {
-        const v = rs[0]?.[c];
-        if (isNumber(v)) { valueCol = c; break; }
-      }
+    const valueCol = resolveColumn(cols, explicitValue) || pickAmountColumn(cols, rs);
+    let labelPick = resolveColumn(cols, explicitLabel);
+    if (!labelPick && explicitLabel === "__composite_period__") {
+      labelPick = pickLabelColumn(cols, rs, valueCol, chartQuestion);
     }
-    if (!labelCol && rs.length > 0) {
-      for (const c of cols) {
-        const v = rs[0]?.[c];
-        if (!isNumber(v) && !/id$/i.test(c)) { labelCol = c; break; }
-      }
+    if (!labelPick) {
+      labelPick = pickLabelColumn(cols, rs, valueCol, chartQuestion);
     }
 
-    const canChart = Boolean(labelCol && valueCol) && rs.length > 0;
-    const type = canChart ? requestedType : "table";
+    const labelCol = typeof labelPick === "string" ? labelPick : "";
+    const labelSpecInner = typeof labelPick === "object" ? labelPick : null;
+
+    const canChart = Boolean(valueCol && (labelCol || labelSpecInner)) && rs.length > 0;
 
     let data = canChart
       ? rs.slice(0, 30).map((r) => ({
-          name: r[labelCol] === null || r[labelCol] === undefined || r[labelCol] === "" ? "—" : String(r[labelCol]),
-          value: isNumber(r[valueCol]) ? r[valueCol] : Number(r[valueCol]) || 0,
+          name: formatRowLabel(r, labelSpecInner || labelCol),
+          value: cellNumber(r, valueCol),
         }))
       : [];
+
+    let type = "table";
+    if (vizOverride === "table") {
+      type = "table";
+    } else if (canChart && data.length > 0) {
+      const requested = (vizOverride || explicitType || guessVizType(chartQuestion)).toLowerCase();
+      if (requested === "table" || requested === "line") {
+        type = /facture|invoice/.test(chartQuestion.toLowerCase()) ? "bar" : "line";
+      } else if (["pie", "bar", "line", "area"].includes(requested)) {
+        type = requested;
+      } else {
+        type = "bar";
+      }
+    }
 
     const topBottom = getTopBottomLimit(question);
     if (topBottom && data.length > 0) {
@@ -402,8 +556,14 @@ export default function InvoiceAssistantDashboard() {
       else data = [...data].sort((a, b) => b.value - a.value).slice(0, topBottom.limit);
     }
 
-    return { labelColumn: labelCol, valueColumn: valueCol, chartData: data, chartType: type };
-  }, [columns, rows, viz.type, viz.labelColumn, viz.valueColumn, vizOverride, question]);
+    return {
+      labelColumn: labelCol || (labelSpecInner ? "période" : ""),
+      valueColumn: valueCol,
+      chartData: data,
+      chartType: type,
+      labelSpec: labelSpecInner,
+    };
+  }, [columns, rows, viz.type, viz.labelColumn, viz.valueColumn, vizOverride, chartQuestion]);
 
   const filteredChartData = useMemo(() => {
     let data = chartData;
@@ -742,6 +902,46 @@ export default function InvoiceAssistantDashboard() {
             ) : null}
           </div>
 
+          {(displayMode === "invoices" || invoiceCards.length > 0) && rows.length > 0 && (
+            <div className="ia__card ia__card--invoices">
+              <h3 className="ia__sectionTitle">Factures trouvées</h3>
+              <div className="ia__invoiceGrid">
+                {invoiceCards.map((inv) => (
+                  <Link
+                    key={inv.id}
+                    to={`/invoice/${inv.id}`}
+                    className="ia__invoiceCard"
+                  >
+                    <div className="ia__invoiceCardTop">
+                      <span className="ia__invoiceCardNum">
+                        {inv.number || `Facture #${inv.id}`}
+                      </span>
+                      {inv.amount != null && (
+                        <span className="ia__invoiceCardAmount">
+                          {Number(inv.amount).toLocaleString("fr-FR", {
+                            style: "currency",
+                            currency: "EUR",
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      )}
+                    </div>
+                    {inv.seller && (
+                      <span className="ia__invoiceCardMeta">Vendeur : {inv.seller}</span>
+                    )}
+                    {inv.client && (
+                      <span className="ia__invoiceCardMeta">Client : {inv.client}</span>
+                    )}
+                    {inv.date && (
+                      <span className="ia__invoiceCardMeta">Date : {String(inv.date)}</span>
+                    )}
+                    <span className="ia__invoiceCardLink">Voir la facture →</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="ia__card ia__card--chart" ref={chartRef}>
             <div className="ia__chartHeader">
               <h3 className="ia__sectionTitle">{viz.title || "Graphique"}</h3>
@@ -868,9 +1068,22 @@ export default function InvoiceAssistantDashboard() {
                   </AreaChart>
                 </ResponsiveContainer>
               )}
-              {chartType !== "pie" && chartType !== "bar" && chartType !== "line" && chartType !== "area" && (
+              {chartType !== "pie" &&
+                chartType !== "bar" &&
+                chartType !== "line" &&
+                chartType !== "area" && (
                 <div className="ia__chartEmpty">
-                  Pose une question du type <b>label + valeur</b> (ex. total TTC par catégorie, top 5 clients, évolution par mois).
+                  {invoiceCards.length > 0 ? (
+                    <>
+                      Les factures sont affichées ci-dessus. Pour un graphique, précisez une
+                      agrégation (ex. <b>total TTC par catégorie</b>).
+                    </>
+                  ) : (
+                    <>
+                      Pose une question du type <b>label + valeur</b> (ex. total TTC par catégorie,
+                      top 5 clients, facture la plus élevée par mois avec le montant TTC).
+                    </>
+                  )}
                 </div>
               )}
             </div>

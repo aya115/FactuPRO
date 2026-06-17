@@ -1,0 +1,534 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Santé du backend",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "color": "red", "index": 0, "text": "DOWN" } }, "type": "value" },
+            { "options": { "1": { "color": "green", "index": 1, "text": "UP" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [{ "color": "red", "value": 0 }, { "color": "green", "value": 1 }]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "up{job=\"factupro-backend\"}",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Backend API",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s", "decimals": 1 } },
+      "gridPos": { "h": 4, "w": 5, "x": 4, "y": 1 },
+      "id": 2,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_avg_processing_seconds[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Temps moyen / facture",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1, "max": 100, "min": 0 } },
+      "gridPos": { "h": 4, "w": 5, "x": 9, "y": 1 },
+      "id": 3,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_pipeline_success_rate_pct[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Succès pipeline (items)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1 } },
+      "gridPos": { "h": 4, "w": 5, "x": 14, "y": 1 },
+      "id": 4,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_anomaly_rate_pct[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Taux d'anomalies / lignes",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 4, "w": 5, "x": 19, "y": 1 },
+      "id": 5,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_invoices_processed_total[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Factures traitées (session)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 101,
+      "title": "Qualité OCR (complément Power BI)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 1,
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": 0 },
+              { "color": "orange", "value": 70 },
+              { "color": "green", "value": 90 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 6 },
+      "id": 10,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_ocr_precision_pct[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Précision OCR moyenne",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 6 },
+      "id": 11,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_ocr_confirmed_invoices_db[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Factures confirmées (OCR log)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1 } },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 6 },
+      "id": 12,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_correction_rate_pct[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Taux de correction",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 6 },
+      "id": 13,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_db_items_uncategorized[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Lignes sans catégorie",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "id": 102,
+      "title": "Base PostgreSQL & alertes superviseur",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 12 },
+      "id": 20,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_db_invoices_total[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Factures en base",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 12 },
+      "id": 21,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_db_invoice_lines_total[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Lignes articles",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "orange", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 12 },
+      "id": 22,
+      "options": { "colorMode": "value", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_supervisor_alerts_unread[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Alertes non lues",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 12 },
+      "id": 23,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_supervisor_alerts_total[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Alertes (total)",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 12 },
+      "id": 24,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_db_users_total[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Utilisateurs",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 12 },
+      "id": 25,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "last_over_time(factupro_db_users_comptable[15m])",
+          "refId": "A",
+          "instant": true,
+          "range": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Comptables",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 16 },
+      "id": 103,
+      "title": "Activité (uploads & confirmations)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 17 },
+      "id": 30,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "factupro_uploads_total",
+          "legendFormat": "Uploads réussis (cumul)",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "increase(factupro_uploads_total[10m])",
+          "legendFormat": "Nouveaux uploads (10 min)",
+          "refId": "B",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "increase(factupro_upload_errors_total[10m])",
+          "legendFormat": "Échecs upload (10 min)",
+          "refId": "C",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Uploads (cumul + pics 10 min)",
+      "type": "timeseries",
+      "description": "Vide si aucun upload depuis le dernier redémarrage du backend. Le cumul (bleu) reste à 0 tant qu'aucune facture n'est traitée."
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "decimals": 0 } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 17 },
+      "id": 31,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "factupro_confirmations_total",
+          "legendFormat": "Confirmations (cumul)",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "increase(factupro_confirmations_total[10m])",
+          "legendFormat": "Nouvelles confirmations (10 min)",
+          "refId": "B",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "increase(factupro_confirmations_with_edits_total[10m])",
+          "legendFormat": "Avec corrections manuelles (10 min)",
+          "refId": "C",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Confirmations (cumul + pics 10 min)",
+      "type": "timeseries",
+      "description": "Les compteurs repartent à 0 quand le conteneur backend redémarre."
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 },
+      "id": 104,
+      "title": "Historique (évolution dans le temps)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 1, "max": 100, "min": 0 } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "id": 40,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" } },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "factupro_ocr_precision_pct",
+          "legendFormat": "Précision OCR %",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Précision OCR dans le temps",
+      "type": "timeseries",
+      "description": "Points espacés = Docker/backend arrêté une partie de la période. Utilisez « Last 6 hours » si la courbe semble vide sur 24 h."
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s" } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "id": 41,
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "factupro_avg_processing_seconds",
+          "legendFormat": "Temps moyen (s)",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Performance pipeline",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "decimals": 0 } },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 34 },
+      "id": 42,
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "factupro_supervisor_alerts_unread",
+          "legendFormat": "Alertes non lues",
+          "refId": "A",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        },
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "factupro_db_invoices_total",
+          "legendFormat": "Factures en base",
+          "refId": "B",
+          "range": true,
+          "instant": false,
+          "editorMode": "code"
+        }
+      ],
+      "title": "Alertes & volume factures",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["factupro", "technique", "monitoring"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "FactuPRO — Monitoring technique",
+  "uid": "factupro-tech",
+  "version": 3
+}

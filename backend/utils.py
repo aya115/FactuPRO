@@ -1,4 +1,5 @@
 import os, json, shutil, time, re
+from shutil import which
 import cv2, numpy as np
 from pdf2image import convert_from_path
 import pytesseract
@@ -14,14 +15,16 @@ WORK_FOLDER = os.path.expanduser("~/invoice_processing/")
 BUSINESS_FOLDER = os.path.join(WORK_FOLDER, "business_invoices")
 os.makedirs(BUSINESS_FOLDER, exist_ok=True)
 
-PG_HOST = "localhost"
-PG_DB = "testdb"
-PG_USER = "postgres"
-PG_PASSWORD = "postgres"
+PG_HOST = os.getenv("PG_HOST", "localhost")
+PG_PORT = int(os.getenv("PG_PORT", "5432"))
+PG_DB = os.getenv("PG_DB", "testdb")
+PG_USER = os.getenv("PG_USER", "postgres")
+PG_PASSWORD = os.getenv("PG_PASSWORD", "postgres")
 
 def get_pg_connection():
     return psycopg2.connect(
         host=PG_HOST,
+        port=PG_PORT,
         dbname=PG_DB,
         user=PG_USER,
         password=PG_PASSWORD
@@ -46,8 +49,84 @@ MAX_RETRIES = 3
 BASE_DELAY = 2
 MIN_DELAY_BETWEEN_REQUESTS = 1.5
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-os.environ["TESSDATA_PREFIX"] = r"C:\Program Files\Tesseract-OCR\tessdata"
+def configure_tesseract():
+    """
+    Configure le binaire Tesseract de manière portable :
+    - priorite a TESSERACT_CMD si defini
+    - sinon detection via PATH
+    - sinon chemins standards Windows / Linux
+    """
+    candidate_paths = []
+
+    env_cmd = (os.environ.get("TESSERACT_CMD") or "").strip()
+    if env_cmd:
+        candidate_paths.append(env_cmd)
+
+    path_cmd = which("tesseract")
+    if path_cmd:
+        candidate_paths.append(path_cmd)
+
+    candidate_paths.extend([
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        "/usr/bin/tesseract",
+        "/usr/local/bin/tesseract",
+    ])
+
+    for cmd in candidate_paths:
+        if cmd and os.path.exists(cmd):
+            pytesseract.pytesseract.tesseract_cmd = cmd
+            break
+
+    def _is_valid_tessdata_dir(path):
+        if not path or not os.path.isdir(path):
+            return False
+        eng = os.path.join(path, "eng.traineddata")
+        fra = os.path.join(path, "fra.traineddata")
+        return os.path.isfile(eng) or os.path.isfile(fra)
+
+    # En Docker, un TESSDATA_PREFIX Windows provenant du .env hote peut casser l'OCR.
+    env_tessdata = (os.environ.get("TESSDATA_PREFIX") or "").strip()
+    if _is_valid_tessdata_dir(env_tessdata):
+        os.environ["TESSDATA_PREFIX"] = env_tessdata
+        return
+
+    linux_candidates = [
+        "/usr/share/tesseract-ocr/5/tessdata",
+        "/usr/share/tesseract-ocr/4.00/tessdata",
+        "/usr/share/tessdata",
+    ]
+    windows_candidates = [
+        r"C:\Program Files\Tesseract-OCR\tessdata",
+        r"C:\Program Files (x86)\Tesseract-OCR\tessdata",
+    ]
+
+    for tessdata in linux_candidates + windows_candidates:
+        if _is_valid_tessdata_dir(tessdata):
+            os.environ["TESSDATA_PREFIX"] = tessdata
+            break
+
+
+configure_tesseract()
+
+
+def _pdf_render_dpi():
+    """DPI pour pdf2image : 150–200 suffit ; 300 est très lent (surtout Docker)."""
+    try:
+        d = int(os.environ.get("PDF_RENDER_DPI", "150"))
+    except (TypeError, ValueError):
+        d = 150
+    return max(96, min(d, 400))
+
+
+def _pdf_max_pages():
+    """Limite le nombre de pages rendues / analysées (factures longues)."""
+    try:
+        n = int(os.environ.get("PDF_MAX_PAGES", "5"))
+    except (TypeError, ValueError):
+        n = 5
+    return max(1, min(n, 20))
+
 
 # ================= UTILS =================
 def clean_text(text):
@@ -109,7 +188,7 @@ def extract_text_from_image(img_path):
 
 
 def extract_ocr_text_from_pdf(pdf_path):
-    pages = convert_from_path(pdf_path, dpi=300)
+    pages = convert_from_path(pdf_path, dpi=_pdf_render_dpi())
     ocr_rows = []
     for page in pages:
         img = np.array(page)
@@ -336,6 +415,20 @@ def save_invoice_to_db(invoice_data, user_id=None):
     try:
         j = invoice_data.get("json_output") or {}
         items = (invoice_data.get("classification") or {}).get("items") or []
+        json_items = j.get("items") or []
+        # Toujours aligner les montants sur l'extraction JSON (évite NULL si classification sans chiffres)
+        merged_items = []
+        for idx, it in enumerate(items):
+            row = dict(it) if isinstance(it, dict) else {}
+            if idx < len(json_items) and isinstance(json_items[idx], dict):
+                ji = json_items[idx]
+                for k in ("quantity", "net_price", "net", "gross", "vat_percentage"):
+                    if row.get(k) is None and ji.get(k) is not None:
+                        row[k] = ji[k]
+                if not (row.get("description") or "").strip() and (ji.get("description") or "").strip():
+                    row["description"] = ji.get("description")
+            merged_items.append(row)
+        items = merged_items
         totals = j.get("totals") or {}
 
         seller = _extract_name(j.get("seller_name"))
@@ -343,14 +436,15 @@ def save_invoice_to_db(invoice_data, user_id=None):
 
         cur.execute("""
             INSERT INTO invoices
-            (filename, invoice_number, date_of_issue, seller_name, client_name,
+            (filename, invoice_number, date_of_issue, issue_date, seller_name, client_name,
              total_net, total_vat, total_gross, user_id)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             RETURNING id
         """, (
             invoice_data.get("filename", ""),
             j.get("invoice_number"),
             j.get("date_of_issue"),
+            parse_invoice_issue_date(j.get("date_of_issue")),
             seller,
             client,
             _to_numeric(totals.get("net")),
@@ -383,6 +477,13 @@ def save_invoice_to_db(invoice_data, user_id=None):
         conn.commit()
 
         print(f"💾 Enregistré en base (invoice_id={invoice_id})")
+
+        try:
+            from powerbi_refresh import schedule_powerbi_refresh
+
+            schedule_powerbi_refresh(f"invoice_saved:{invoice_id}")
+        except Exception as pbi_e:
+            print(f"⚠️ Power BI refresh non déclenché: {pbi_e}")
 
         return invoice_id
 
@@ -545,12 +646,13 @@ Texte complet OCR :
 {plain_text}
 
 🔹 INSTRUCTIONS :
-- Détails du seller et client
-- Analyse la facture et **extrait tous les items présents** dans le texte OCR.
-- Pour chaque item, affiche exactement ce qui est écrit : description, quantité, Net price, Net worth, VAT, Gross worth.
+- Détails du seller et client : **ne laisse pas le client vide** si le texte OCR contient un acheteur, « Bill to », « Ship to », « Customer », « Client », adresse de livraison ou un second bloc d’identité après le vendeur. Si plusieurs blocs, le **client** est en général celui qui n’est pas l’émetteur de la facture.
+- Analyse la facture et **extrait tous les items présents** dans le texte OCR (chaque ligne du tableau / chaque article).
+- Pour chaque item, affiche exactement ce qui est écrit : description, quantité, Net price, Net worth, **TVA / VAT en %**, Gross worth.
+- **vat_percentage** : si la facture indique une TVA par ligne ou un taux global, recopie-le pour **chaque** ligne concernée ; si un seul taux s’applique à toutes les lignes, répète ce même nombre sur chaque item. Ne laisse **vat_percentage** à 0 que si aucune TVA n’est indiquée nulle part.
 - Affiche également les totaux **tels qu’ils apparaissent dans la facture**, sans recalcul.
 - Présente tout sous forme de Markdown clair et structuré.
-- Extraire tous les items présents.
+- Extraire tous les items présents (ne fusionne pas deux lignes distinctes).
 ⚠️ RÈGLE ABSOLUE :
 - N’ARRONDIS jamais les valeurs.
 - N’invente jamais un chiffre absent.
@@ -613,7 +715,7 @@ def clean_description(text):
     text = text.replace("[", "").replace("]", "")
     text = text.replace("\"", "").replace("\\", "")
     text = re.sub(r"\s+", " ", text)
-    return text.strip()[:200]  # limite longueur si trop long
+    return text.strip()[:500]  # aligné avec predictor.clean_description (titres produits / livres)
 
 def _get_classifier():
     """Instancie le classifieur une seule fois"""
@@ -647,7 +749,13 @@ def classify_expense(invoice_json):
         return {
             "items": [
                 {
+                    # Conserver tous les champs chiffrés pour l'INSERT SQL.
                     "description": it.get("description", ""),
+                    "quantity": it.get("quantity"),
+                    "net_price": it.get("net_price"),
+                    "net": it.get("net"),
+                    "gross": it.get("gross"),
+                    "vat_percentage": it.get("vat_percentage"),
                     "category": "Non classé",
                     "classification_source": "fallback",
                     "precision_score": 0.0,
@@ -666,7 +774,27 @@ def classify_expense(invoice_json):
     # Préparer la liste pour le modèle
     descriptions_clean = [it["description_clean"] for it in items]
     predictions = clf.predict(descriptions_clean)
-    
+
+    if not predictions or len(predictions) != len(items):
+        print("⚠️ Prédictions classification invalides, fallback avec chiffres conservés")
+        return {
+            "items": [
+                {
+                    "description": it.get("description", ""),
+                    "quantity": it.get("quantity"),
+                    "net_price": it.get("net_price"),
+                    "net": it.get("net"),
+                    "gross": it.get("gross"),
+                    "vat_percentage": it.get("vat_percentage"),
+                    "category": "Non classé",
+                    "classification_source": "fallback_invalid_predictions",
+                    "precision_score": 0.0,
+                }
+                for it in items
+            ],
+            "source": "fallback",
+        }
+
     # Affichage des prédictions pour debug
     for i, p in enumerate(predictions):
         print(f"✅ Item {i}: → {p['category']}")
@@ -811,6 +939,101 @@ def safe_match(v1, v2):
     return s1 == s2
 
 
+def parse_invoice_issue_date(date_str):
+    """
+    Interprète date_of_issue (texte OCR / JSON) en date calendaire pour Power BI / SQL DATE.
+    - Formes ISO : YYYY-MM-DD, YYYY/MM/DD
+    - JJ/MM/AAAA ou MM/JJ/AAAA : si un bloc > 12, le format est déduit ; sinon ordre selon
+      INVOICE_DATE_AMBIGUOUS (EUR = jour d'abord par défaut, US = mois d'abord).
+    """
+    from datetime import date, datetime
+
+    if date_str is None:
+        return None
+    if isinstance(date_str, datetime):
+        return date_str.date()
+    if isinstance(date_str, date):
+        return date_str
+    if not isinstance(date_str, str):
+        return None
+
+    s = date_str.strip()
+    if not s:
+        return None
+
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%d.%m.%Y"):
+        try:
+            return datetime.strptime(s, fmt).date()
+        except ValueError:
+            pass
+
+    parts = re.split(r"[/.-]", s)
+    if len(parts) != 3 or len(parts[2]) != 4 or not parts[2].isdigit():
+        return None
+    try:
+        a, b, y = int(parts[0]), int(parts[1]), int(parts[2])
+    except ValueError:
+        return None
+
+    if a > 12:
+        try:
+            return datetime(y, b, a).date()
+        except ValueError:
+            return None
+    if b > 12:
+        try:
+            return datetime(y, a, b).date()
+        except ValueError:
+            return None
+
+    prefer_eur = os.environ.get("INVOICE_DATE_AMBIGUOUS", "EUR").upper() in (
+        "EUR", "FR", "EU", "DMY",
+    )
+    if prefer_eur:
+        for ymd in ((y, b, a), (y, a, b)):
+            try:
+                return datetime(*ymd).date()
+            except ValueError:
+                continue
+    else:
+        for ymd in ((y, a, b), (y, b, a)):
+            try:
+                return datetime(*ymd).date()
+            except ValueError:
+                continue
+    return None
+
+
+def backfill_invoice_issue_dates():
+    """Remplit issue_date pour les lignes déjà présentes (migration / Power BI)."""
+    conn = get_pg_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            """
+            SELECT id, date_of_issue FROM invoices
+            WHERE issue_date IS NULL
+              AND date_of_issue IS NOT NULL
+              AND TRIM(date_of_issue) <> ''
+            """
+        )
+        rows = cur.fetchall()
+        n = 0
+        for inv_id, d in rows:
+            parsed = parse_invoice_issue_date(d)
+            if parsed:
+                cur.execute(
+                    "UPDATE invoices SET issue_date = %s WHERE id = %s",
+                    (parsed, inv_id),
+                )
+                n += 1
+        conn.commit()
+        return n
+    finally:
+        cur.close()
+        conn.close()
+
+
 def compute_ocr_precision_db(extracted, corrected):
     """
     Calcul plus strict de la précision OCR.
@@ -895,8 +1118,8 @@ def log_ocr_precision_details(invoice_id, extracted, corrected):
     for row in rows_to_insert:
         cur.execute("""
             INSERT INTO ocr_precision_details
-            (invoice_id, field_name, extracted_value, corrected_value, is_correct, precision_pct)
-            VALUES (%s,%s,%s,%s,%s,%s)
+            (invoice_id, field_name, extracted_value, corrected_value, is_correct, precision_pct, logged_at)
+            VALUES (%s,%s,%s,%s,%s,%s, NOW())
         """, (*row, precision))
 
     conn.commit()
@@ -1053,11 +1276,20 @@ def save_corrected_invoice_db(original_id, corrected_json):
         corrected_for_log["total_net"] = totals.get("net")
         corrected_for_log["total_vat"] = totals.get("vat")
         corrected_for_log["total_gross"] = totals.get("gross")
-        log_ocr_precision_details(original_id, extracted, corrected_for_log)
+        precision_pct = log_ocr_precision_details(
+            original_id, extracted, corrected_for_log
+        )
         # ================= COMMIT =================
         conn.commit()
 
-        return corrected_invoice_db_id
+        try:
+            from powerbi_refresh import schedule_powerbi_refresh
+
+            schedule_powerbi_refresh(f"invoice_corrected:{original_id}")
+        except Exception as pbi_e:
+            print(f"⚠️ Power BI refresh non déclenché: {pbi_e}")
+
+        return corrected_invoice_db_id, precision_pct
 
     except Exception as e:
         conn.rollback()
@@ -1284,7 +1516,9 @@ def process_files(file_paths, user_id=None, auto_save=True):
         try:
             # ================= PDF =================
             if ext == ".pdf":
-                pages = convert_from_path(filepath, dpi=300)
+                dpi = _pdf_render_dpi()
+                print(f"   → PDF rendu à {dpi} DPI (variable PDF_RENDER_DPI)", flush=True)
+                pages = convert_from_path(filepath, dpi=dpi)
                 all_responses = []
 
                 for p, page in enumerate(pages, 1):
@@ -1572,9 +1806,20 @@ Analyse complète en Markdown et JSON.
     # Mise à jour des métriques runtime
     t_total = time.time() - t0_total
     nb_invoices = len(all_data)
-    nb_with_items = sum(1 for d in all_data if (d.get("json_output") or {}).get("items"))
+
+    def _line_item_count(inv):
+        """Nombre de lignes d'articles (JSON extraction et/ou classification post-pipeline)."""
+        jo = inv.get("json_output") or {}
+        raw_items = jo.get("items")
+        n_json = len(raw_items) if isinstance(raw_items, list) else 0
+        cls = inv.get("classification") or {}
+        cls_items = cls.get("items")
+        n_cls = len(cls_items) if isinstance(cls_items, list) else 0
+        return max(n_json, n_cls)
+
+    nb_with_items = sum(1 for d in all_data if _line_item_count(d) > 0)
     nb_anomalies = sum(len(d.get("anomalies") or []) for d in all_data)
-    nb_lines = sum(len((d.get("classification") or {}).get("items") or []) for d in all_data)
+    nb_lines = sum(_line_item_count(d) for d in all_data)
     try:
         from metrics import update_runtime_metrics
         update_runtime_metrics(

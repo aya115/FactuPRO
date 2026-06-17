@@ -1,19 +1,50 @@
-* {
-  margin: 0;
-  padding: 0;
+@import "./styles/theme.css";
+@import "./styles/pages.css";
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--fp-font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--fp-text);
+  background: var(--fp-bg-subtle);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--fp-primary);
+}
+
+a:hover {
+  color: var(--fp-primary-hover);
+}
+
 code {
-  font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--fp-font-mono);
+  font-size: 0.9em;
+}
+
+::selection {
+  background: var(--fp-primary-soft);
+  color: var(--fp-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--fp-primary);
+  outline-offset: 2px;
 }
